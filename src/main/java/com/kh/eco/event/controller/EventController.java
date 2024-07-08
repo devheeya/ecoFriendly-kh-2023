@@ -54,16 +54,6 @@ public class EventController {
 
         return "event/eventListView";
     }
-	
-	// 이벤트 등록폼
-	/*
-	 * @RequestMapping("enrollForm.ev") public String eventEnrollForm(String
-	 * eventDate, Model model) {
-	 * 
-	 * //System.out.println("이벤트등록날짜 : " + eventDate);
-	 * //model.addAttribute("eventDate", eventDate); //return "redirect:/"; //return
-	 * "event/eventListView"; //return "redirect:/event"; return "redirect:/"; }
-	 */
 	  
 
 	/*
@@ -90,6 +80,7 @@ public class EventController {
 											 Model model, 
 											 HttpSession session) {
 
+
 		 if( !upfile.getOriginalFilename().contentEquals("")) {	  
 			  e.setOriginName(upfile.getOriginalFilename());
 			  e.setChangeName(ChallengeController.saveFile(upfile, session));
@@ -102,6 +93,7 @@ public class EventController {
 			 return "fail"; 
 		 }
 	 }
+
 	  
 
 	  

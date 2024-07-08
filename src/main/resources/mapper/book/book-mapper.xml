@@ -42,23 +42,6 @@
 		<result column="BOOK_REPORT_NO" property="bookReportNo" />
 	</resultMap>
 	
-	<!-- 신고게시글 -->
-	<resultMap id="reportBlackResultSet" type="adminReportBlack">
-		<result column="BOOK_REPORT_NO" property="reportNo" />
-		<result column="USER_ID" property="userId" />
-		<result column="BOOK_REPORT_TITLE" property="reportTitle" />
-		<result column="REPORT_DATE" property="reportDate" />
-		<result column="BOOK_REPORT_STAR" property="reportStar" />
-	</resultMap>
-	
-	<!-- 신고댓글 -->
-	<resultMap id="reportReplyBlackResultSet" type="adminReportReplyBlack">
-		<result column="BOOK_REPORT_REPLY_NO" property="replyBlackNo" />
-		<result column="BOOK_REPORT_REPLY_DATE" property="replyDate" />
-		<result column="USER_ID" property="userId" />
-		<result column="BOOK_REPORT_REPLY_CONTENT" property="replyContent" />
-	</resultMap>
-	
 	
 	<!-- 도서 조회수 조회 -->
 	<select id="countList" resultType="book">
@@ -103,7 +86,7 @@
 	</select>
 	
 	<!-- 북마크 추가 -->
-	<insert id="insertBookMark" parameterType="hashMap">
+	<insert id="insertBookMark" parameterType="hashmap">
 		INSERT INTO TB_LIKE_BOOK
 		VALUES
 				(
@@ -113,7 +96,7 @@
 	</insert>
 	
 	<!-- 북마크 제거 -->
-	<delete id="removeBookMark" parameterType="hashMap">
+	<delete id="removeBookMark" parameterType="hashmap">
 		DELETE FROM TB_LIKE_BOOK
 		WHERE
 			ISBN13 = #{ISBN}
@@ -122,7 +105,8 @@
 	</delete>
 	
 	<!-- 북마크 조회 -->
-	<select id="selectBookMark" parameterType="hashMap" resultType="_int">
+	<select id="selectBookMark" parameterType="hashmap" 
+			resultType="_int">
 		SELECT
 			COUNT(*)
 		FROM
@@ -134,7 +118,7 @@
 	</select>
 	
 	<!-- 도서 한줄평 등록 -->
-	<insert id="ajaxInsertBookReply" parameterType="hashMap">
+	<insert id="insertBookReply" parameterType="hashmap">
 		INSERT ALL
 				WHEN 
 				<![CDATA[
@@ -150,7 +134,8 @@
 				]]>
 				THEN
 				INTO TB_ECO_HISTORY
-				VALUES (
+				VALUES 
+					(
 					#{userNo},
 					10,
 					SYSDATE,
@@ -158,7 +143,8 @@
 					SEQ_ECO_HISTORY.NEXTVAL
 					)
 				INTO TB_BOOK_REPLY
-				VALUES (
+				VALUES 
+					(
 					SYSDATE,
 					#{content},
 					#{ISBN13},
@@ -224,7 +210,7 @@
 	
 	<!-- 독후감 게시글 리스트 조회 -->
 	<select id="selectReportList" resultMap="bookReportResultSet">
-		SELECT
+		SELECT      
 			BOOK_REPORT_NO,
 			BOOK_REPORT_NOTICE,
 			BOOK_REPORT_TITLE,
@@ -232,17 +218,50 @@
 			TO_CHAR(BOOK_REPORT_DATE, 'YYYY-MM-DD') AS "REPORT_DATE",
 			BOOK_REPORT_COUNT,
 			BOOK_REPORT_SECRET,
-			BOOK_REPORT_STAR
+			BOOK_REPORT_STAR,
+            ROWNUM AS RNUM
 		FROM
 			TB_BOOK_REPORT
 		JOIN
 			TB_USER USING(USER_NO)
 		WHERE
 			BOOK_REPORT_STATUS = 'Y'
-		ORDER
-		BY
-			BOOK_REPORT_NOTICE DESC NULLS LAST,
-			BOOK_REPORT_DATE DESC
+        AND BOOK_REPORT_NOTICE = 1
+            
+		UNION ALL
+		
+		SELECT *
+		FROM
+			(SELECT A.*, ROWNUM AS RNUM
+			 FROM    (SELECT
+				      		BOOK_REPORT_NO,
+				        	BOOK_REPORT_NOTICE,
+				        	BOOK_REPORT_TITLE,
+				        	USER_ID,
+				        	TO_CHAR(BOOK_REPORT_DATE, 'YYYY-MM-DD') AS "REPORT_DATE",
+				        	BOOK_REPORT_COUNT,
+				        	BOOK_REPORT_SECRET,
+				        	BOOK_REPORT_STAR
+				      FROM
+				            TB_BOOK_REPORT
+				      JOIN
+				            TB_USER USING(USER_NO)
+				      WHERE
+				            BOOK_REPORT_STATUS = 'Y'
+				      AND 
+				            BOOK_REPORT_NOTICE != 1
+				      ORDER
+				      BY
+				            BOOK_REPORT_DATE DESC) A)
+		   WHERE RNUM > #{startLimit}
+		   <![CDATA[
+		   AND RNUM <= ]]>(#{endLimit}-(SELECT COUNT(*)
+					                    FROM
+					                        TB_BOOK_REPORT
+					                    WHERE
+					                        BOOK_REPORT_STATUS = 'Y'
+					                    AND BOOK_REPORT_NOTICE = 1))
+		
 	</select>
 	
 	<!-- 독후감 게시글 검색 개수 조회 -->
@@ -269,7 +288,7 @@
 	</select>
 	
 	<!-- 독후감 게시글 검색 조회 -->
-	<select id="searchReportList" parameterType="hashMap" resultMap="bookReportResultSet">
+	<select id="searchReportList" parameterType="hashmap" resultMap="bookReportResultSet">
 		SELECT
 			BOOK_REPORT_NO,
 			BOOK_REPORT_NOTICE,
@@ -402,7 +421,7 @@
 			#{userNo},
 			#{reportNo}
 			)
-		SELECT 1 FROM DUAL
+		SELECT * FROM DUAL
 	</insert>
 	
 	<!-- 독후감 게시판 댓글 개수 조회 -->
@@ -578,14 +597,13 @@
 	</select>
 	
 	<!-- 관리자페이지 신고게시글 목록 조회 -->
-	<select id="adminReportBlack" resultMap="reportBlackResultSet">
+	<select id="adminReportBlack" resultMap="bookReportResultSet">
 		SELECT 
-			DISTINCT BRB.BOOK_REPORT_NO AS "BOOK_REPORT_NO",
+			BRB.BOOK_REPORT_NO AS "BOOK_REPORT_NO",
 			USER_ID,
 			BOOK_REPORT_TITLE,
 			TO_CHAR(BOOK_REPORT_DATE, 'YYYY-MM-DD') AS "REPORT_DATE",
-			BOOK_REPORT_STAR,
-			BOOK_REPORT_DATE
+			BOOK_REPORT_STAR
 		FROM 
 			TB_BOOK_REPORT_BLACK BRB
 		JOIN
@@ -593,16 +611,17 @@
 		ON BRB.BOOK_REPORT_NO = BR.BOOK_REPORT_NO
 		JOIN TB_USER U
 		ON U.USER_NO = BRB.BLACK_USER_NO
-		WHERE BRB.BOOK_REPORT_NO IN (SELECT 
-										BOOK_REPORT_NO
-							         FROM (SELECT 
-							        			DISTINCT BRB.BOOK_REPORT_NO, 
-							        			COUNT(*) OVER (PARTITION BY BRB.BOOK_REPORT_NO) AS REPORT_COUNT
-							               FROM TB_BOOK_REPORT_BLACK BRB
-                                           JOIN TB_BOOK_REPORT BR
-                                           ON BRB.BOOK_REPORT_NO = BR.BOOK_REPORT_NO
-                                           WHERE BOOK_REPORT_STATUS = 'Y')
-							         WHERE REPORT_COUNT > 5)
+		WHERE BRB.BOOK_REPORT_NO 
+			IN (SELECT 
+					BOOK_REPORT_NO
+		        FROM (SELECT 
+		        			DISTINCT BRB.BOOK_REPORT_NO, 
+		        			COUNT(*) OVER (PARTITION BY BRB.BOOK_REPORT_NO) AS REPORT_COUNT
+		               FROM TB_BOOK_REPORT_BLACK BRB
+	                                     JOIN TB_BOOK_REPORT BR
+	                                     ON BRB.BOOK_REPORT_NO = BR.BOOK_REPORT_NO
+	                                     WHERE BOOK_REPORT_STATUS = 'Y')
+		        WHERE REPORT_COUNT > 5)
 		ORDER BY 
 			BOOK_REPORT_DATE DESC
 	</select>
@@ -617,7 +636,7 @@
 	</select>
 	
 	<!-- 관리자페이지 신고댓글 목록 조회 -->
-	<select id="adminReportReplyBlack" resultMap="reportReplyBlackResultSet">
+	<select id="adminReportReplyBlack" resultMap="bookReportReplyResultSet">
 		SELECT 
 			DISTINCT BRRB.BOOK_REPORT_REPLY_NO,
 			USER_ID,

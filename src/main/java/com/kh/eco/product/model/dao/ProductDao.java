@@ -2,6 +2,7 @@ package com.kh.eco.product.model.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
@@ -25,7 +26,7 @@ public class ProductDao {
 		return sqlSession.selectOne("productMapper.selectProductCount");
 	}
 		
-	public ArrayList<Product> selectProductList(SqlSession sqlSession, HashMap map, RowBounds rowbounds){
+	public ArrayList<Product> selectProductList(SqlSession sqlSession, Map<String, String> map, RowBounds rowbounds){
 		return (ArrayList)sqlSession.selectList("productMapper.selectProductList", map, rowbounds);
 	}
 	public ArrayList<Product> searchProduct(SqlSession sqlSession, String keyword){

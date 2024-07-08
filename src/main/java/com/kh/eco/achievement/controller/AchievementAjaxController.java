@@ -59,22 +59,12 @@ public class AchievementAjaxController {
 													MultipartFile upfile,
 													HttpSession session
 													) {	
-		
-		
-		if( !upfile.getOriginalFilename().equals("") ) {
-			
+		if( !upfile.getOriginalFilename().equals("") ) {	
 			achievement.setOriginName(upfile.getOriginalFilename());
-			achievement.setChangeName(ChallengeController.saveFile(upfile, session));
-			
+			achievement.setChangeName(ChallengeController.saveFile(upfile, session));	
 		} 
-
-		if(achievementService.insertAchievement(achievement) > 0) {
-			return "success";
-			
-		} else {
-			return "fail";
-		}
-		
+		if(achievementService.insertAchievement(achievement) > 0) { return "success"; } 
+		else { return "fail"; }
 	}
 	
 	

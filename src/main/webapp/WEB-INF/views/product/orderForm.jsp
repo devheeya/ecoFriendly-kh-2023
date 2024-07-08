@@ -96,7 +96,7 @@ h2 {
 							<div>
 								<h5>${item.productName}</h5>
 								<span>${item.optionName }</span>
-								<span>${item.price *order.qty}</span>
+								<span class="one-price">${item.price *order.qty}</span>
 							</div>
 							</div>
 						</c:if>
@@ -109,7 +109,7 @@ h2 {
 									<div>
 										<h5>${i.productName} (${i.qty }개)</h5>
 										<span>${i.optionName }</span>
-										<span>${i.price *i.qty}원</span>
+										<div class="item-price">${i.price *i.qty}</div>
 									</div>
 								</div>
 							</c:forEach>
@@ -173,7 +173,17 @@ h2 {
 				</div>
 			</form>
 			<script>
-				function letsgo(){
+				$(()=>{
+					const $total = $('#totalPrice');
+					$total.text(locale($total.text())+'원');
+					$('.item-price').each((index, value)=>{
+						$(value).text(locale($(value).text())+'원');
+					})
+				});
+				function locale(number){
+					return Number(number).toLocaleString('ko-KR');
+				};
+				function makePayment(){
 					$.ajax({
 						url :'pay',
 						data : {
@@ -193,7 +203,7 @@ h2 {
 				function addressList(){
 					$.ajax({
 						url : 'addressList',
-						success : e=>{
+						success : e => {
 							$('#addressList .modal-body > div').empty();
 							e.map(a=>{
 								$el = $('<div class="address"><table class="table table-borderless"></table></div>').attr('id', a.addressNo);
@@ -212,8 +222,7 @@ h2 {
 							})
 								return true;
 						},
-						error : () =>{
-							console.log('ajax하기시러..배송지이이이이!');
+						error : () => {
 							return false;
 						}
 					});				
@@ -233,6 +242,7 @@ h2 {
       		</div>
 		</div>
 	</div>
+<jsp:include page="../common/footer.jsp"/>	
 <!-- The Modal -->
   <div class="modal fade" id="addressList">
     <div class="modal-dialog modal-dialog-centered">
@@ -284,8 +294,7 @@ h2 {
 	<script>
 		function postCode(){
 			new daum.Postcode({
-				oncomplete : function(data){
-					console.log(data);
+				oncomplete : data => {
 					$('input[name="post"]').val(data.zonecode);
 					$('input[name="address"]').val(data.address);
 				}
@@ -301,19 +310,12 @@ h2 {
 						address : $('input[name = "address"]').val(),
 						detailAddress : $('input[name = "detailAddress"]').val(),
 						},
-				success : e =>{
-					console.log(e);
+				success : e => {
 					alert('배송지 추가 성공!');
 					addressList();
-				},
-				error : () =>{
-					console.log('ajax...');
 				}
-			});
-			
+			});			
 		};
-
 	</script>
-<jsp:include page="../common/footer.jsp"/>	
 </body>
 </html>

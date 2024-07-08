@@ -5,10 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
+@Getter @Setter @NoArgsConstructor @ToString
 public class Book {
 	
 	private String ISBN13;
@@ -24,3 +21,5 @@ public class Book {
 	private String bookReply;
 	
 }
+
+

@@ -214,6 +214,7 @@
          		}); 
               	
               	//click이벤트
+              	
          		$('#searchPlace').on('click', function(){
          			$('#placeModal').modal('show');
          			$.ajax({
@@ -223,18 +224,13 @@
          				},
          				success : data => {
          					placeResults = data.response.result.items;
-         					console.log(placeResults);
-         					
-         					let value='';
-         					
+         					let value='';	
          					for(let i in placeResults){
          						placeResult = placeResults[i];
-         						
          						value += '<div id="placeResult-form">'
 			         							+ '<div>'
 			     								+ placeResult.title
-			     								+ '</div>'
-			     								
+			     								+ '</div>'	
 		         								+ '<span>'
 		         								+ placeResult.address.parcel
 		         								+ '</span>'
@@ -251,10 +247,11 @@
          				},
          				error : function(){
          					console.log('실패');
-         					
          				}
          			})
-         		});//click
+         		});
+              	
+              	//click
          		
 			
          		

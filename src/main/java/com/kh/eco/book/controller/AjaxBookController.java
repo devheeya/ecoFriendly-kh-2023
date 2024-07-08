@@ -1,13 +1,21 @@
 package com.kh.eco.book.controller;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +27,6 @@ import com.kh.eco.book.model.vo.Book;
 import com.kh.eco.book.model.vo.BookReply;
 import com.kh.eco.book.model.vo.BookReport;
 import com.kh.eco.book.model.vo.BookReportReply;
-import com.kh.eco.book.model.vo.ReportBlack;
-import com.kh.eco.book.model.vo.ReportReplyBlack;
 import com.kh.eco.common.model.template.Pagination;
 import com.kh.eco.common.model.vo.PageInfo;
 
@@ -32,74 +38,67 @@ public class AjaxBookController {
 	
 	private final BookService bookService;
 	
-	// 북마크 있나없나 조회
-	@PostMapping(value="selectBookMark.bk", produces="text/html; charset=UTF-8")
-	public String ajaxSelectBookMark(String ISBN13, int userNo) {
+	private HttpHeaders header(String produces) {
+		String[] splitArr = produces.split("/");
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType(splitArr[0], splitArr[1], Charset.forName("UTF-8")));
+		return header;
+	}
+	
+	@GetMapping("bookMark.bk")
+	public ResponseEntity<String> ajaxSelectBookMark(String ISBN13, int userNo) {
+		
 		String className="";
-		HashMap<String, Object> map = new HashMap();
+		
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ISBN", ISBN13);
 		map.put("userNo", userNo);
 		
-		int bookMarkCount = bookService.ajaxSelectBookMark(map);
+		int bookMarkCount = bookService.selectBookMark(map);
 		
-		if(bookMarkCount > 0) { // 북마크 있음
-			className = "bookmark abled";
-		} else { // 북마크 없음
-			className = "bookmark";
-		}
+		className = bookMarkCount > 0 ? "bookmark abled" : "bookmark";
 		
-		return className;
+		return new ResponseEntity<String>
+				   (className, header("text/html"), HttpStatus.OK);
 	}
 	
-	//북마크 추가/삭제
-	@PostMapping(value="bookMark.bk", produces="text/html; charset=UTF-8")
-	public String ajaxBookMark(String className, String ISBN13, int userNo, HttpSession session) {
+	@PostMapping("bookMark.bk")
+	public ResponseEntity<String> ajaxBookMark
+	(String className, String ISBN13, int userNo, HttpSession session) {
 		
-		HashMap<String, Object> map = new HashMap();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ISBN", ISBN13);
 		map.put("userNo", userNo);
 		
-		if(className.equals("bookmark")) { // 북마크 하기 전
-			int result = bookService.insertBookMark(map);
-			if(result > 0) { // 북마크 잘됨
-				className = "bookmark abled";
-			} else { // 북마크 안됨
-				session.setAttribute("failBookAlert", "북마크 조작 실패");
-			}
-		} else if(className.equals("bookmark abled")) { // 북마크 이후
-			int result = bookService.removeBookMark(map);
-			if(result > 0) { // 북마크 제거 잘됨
-				className = "bookmark";
-			} else { // 북마크 제거 안됨
-				session.setAttribute("failBookAlert", "북마크 조작 실패");
-			}
-		} else { // 그 외
-			session.setAttribute("failBookAlert", "북마크 조작 실패");
+		Map<String, Object> resultMap = 
+					bookService.bookMarkMenu(map, className);
+		
+		if((int)resultMap.get("result") < 0) {
+			className = (String)resultMap.get("className");
 		}
-		return className;
+		return new ResponseEntity<String>
+				   (className, header("text/html"), HttpStatus.OK);
 	}
 	
-	// 한줄평 등록
-	@PostMapping(value="insertBookReply.bk", produces="text/html; charset=UTF-8")
-	public String ajaxInsertBookReply(String ISBN13, int userNo, String content, HttpSession session) 
+	@PostMapping("bookReply.bk")
+	public ResponseEntity<String> ajaxInsertBookReply(String ISBN13, int userNo, 
+													  String content, HttpSession session) 
 	throws Exception {
 		
 		BookController.checkText(content, 60);
 		
-		HashMap<String, Object> map = new HashMap();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ISBN13", ISBN13);
 		map.put("userNo", userNo);
 		map.put("content", content);
 		
-		if(bookService.ajaxInsertBookReply(map) > 1) { // 성공
-			return "success";
-		} else { // 실패
-			return "fail";
-		}
+		String result = bookService.insertBookReply(map) > 1 ? "success" : "fail";
+		
+		return new ResponseEntity<String>(result, header("text/html"), HttpStatus.OK);
 	}
 	
 	// 한줄평 조회
-	@PostMapping(value="selectBookReply.bk", produces="application/json; charset=UTF-8")
+	@GetMapping(value="bookReply.bk", produces="application/json; charset=UTF-8")
 	public String ajaxSelectBookReply(@RequestParam(value="cPage", defaultValue="1") int currentPage, String ISBN13) throws IOException {
 		
 		// 댓글 개수 조회
@@ -122,7 +121,7 @@ public class AjaxBookController {
 	}
 	
 	// 한줄평 삭제
-	@PostMapping(value="deleteBookReply.bk", produces="text/html; charset=UTF-8")
+	@DeleteMapping(value="bookReply.bk", produces="text/html; charset=UTF-8")
 	public String ajaxDeleteBookReply(String ISBN13, int userNo, int ecoNo) {
 		
 		HashMap<String, Object> map = new HashMap();
@@ -223,16 +222,17 @@ public class AjaxBookController {
 	
 	// 마이페이지 북마크 책 조회
 	@PostMapping(value="bookmypage.bk", produces="application/json; charset=UTF-8")
-	public String bookMyPage(@RequestParam(value="bPage", defaultValue="1") int currentPage, Model model, int userNo) 
+	public String bookMyPage(@RequestParam(value="bPage", defaultValue="1") int currentPage, 
+							 Model model, int userNo) 
 	throws IOException {
 		
 		PageInfo bookPi = Pagination.getPageInfo(bookService.bookmarkCountMyPage(userNo), currentPage, 4, 0);
 		
 		List<String> list = bookService.bookmarkMyPage(userNo, bookPi);
-		List<Book> bookList = new ArrayList();
+		List<Book> bookList = new ArrayList<Book>();
 		
 		for(int i = 0; i < list.size(); i++) {
-			Book book = new Book();
+			Book book = new Book();	
 			
 			book = BookController.bookLookUp(list.get(i));
 			
@@ -318,7 +318,7 @@ public class AjaxBookController {
 		if(result != 0) {
 			PageInfo Pi = Pagination.getPageInfo(result, currentPage, 5, 5);
 			
-			List<ReportBlack> list = bookService.adminReportBlack(Pi);
+			List<BookReport> list = bookService.adminReportBlack(Pi);
 
 			HashMap<String, Object> map = new HashMap();
 			map.put("list", list);
@@ -341,7 +341,7 @@ public class AjaxBookController {
 		if(result != 0) {
 			PageInfo pi = Pagination.getPageInfo(result, currentPage, 5, 5);
 			
-			List<ReportReplyBlack> list = bookService.adminReportReplyBlack(pi);
+			List<BookReportReply> list = bookService.adminReportReplyBlack(pi);
 
 			HashMap<String, Object> map = new HashMap();
 			map.put("list", list);

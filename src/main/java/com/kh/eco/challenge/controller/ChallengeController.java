@@ -91,22 +91,27 @@ public class ChallengeController {
 
 
 	// 게시글 정렬결과 조회
+	
 	@GetMapping("search.status")
+
 	public String selectChallengeStatus(
 	@RequestParam(value="currentPage", defaultValue="1")int currentPage, 
 																						Model model, 
 																						String status) {
-		HashMap<String, String> map = new HashMap(); 
+		Map<String, String> map = new HashMap(); 
 		map.put("status", status);
+
 		PageInfo pi = Pagination.getPageInfo( 
 				challengeService.countChallengeStatus(map),
 				currentPage,
 				4,
 				5
 				);
+
 		model.addAttribute("status", status);
 		model.addAttribute("list", challengeService.selectChallengeStatus(map, pi));	
 		model.addAttribute("pi", pi);
+
 		return "challenge/challengeListView";
 	}
 
@@ -165,15 +170,10 @@ public class ChallengeController {
 	public static String saveFile(MultipartFile upfile, HttpSession session) {
 
 		String originName = upfile.getOriginalFilename();
-
-		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
+		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()); 
 		int ranNum = (int)Math.random() * 90000 + 10000;
-
 		String ext = originName.substring(originName.lastIndexOf("."));
-
 		String changeName = currentTime + ranNum + ext; 
-
 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
 
 		try {

@@ -1,0 +1,281 @@
+@font-face {
+	font-family: 'SBAggroB';
+	src:
+		url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff')
+		format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+div {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+
+}
+ul{
+	list-style:none;
+	padding:0px;
+	margin:0px;
+}
+#keyword-list>li{
+	cursor:pointer;
+}
+
+.outer {
+	height: 1100px;
+}
+.content {
+	width: 1200px;
+	height: 1000px;
+	margin: auto;
+}
+
+#searching-area {
+	height: 50px;
+	width: 400px;
+	margin: auto;
+}
+
+#searching-area input[type=text] {
+	width: 80%;
+	height: 90%;
+	border-left-width: 0;
+	border-right-width: 0;
+	border-top-width: 0;
+	border-bottom-width: 0;
+	background:beige;
+}
+#searching-area button{
+	width : 40px; 
+	height 40px;
+	background : none;
+	border : none;
+}
+#searching-area img {
+	width: 90%;
+	height: 90%;
+	float: right;
+	cursor : pointer;
+}
+
+#controll-area>select {
+	width:130px;
+	margin-left: 737px;
+	font-size: 20px;
+}
+
+#controll-area>button {
+	padding: 5px;
+	margin-left: 5px;
+	border-radius: 5px;
+	border: none;
+	color: white;
+	font-size: 20px;
+}
+
+#product-area {
+	margin-top : 20px;
+	font-family: 'SBAggroB';
+	width: 100%;
+}
+
+#products {
+	width: 100%;
+}
+.product {
+	float:left;
+	width: 393px;
+	height: 400px;
+	cursor:pointer;
+	margin:2px;
+}
+.product-info{
+	width:100%;
+	height:310px;
+}
+
+.product table {
+	display: none;
+	padding-top: 50px;
+	padding-left: 100px;
+	text-align:center;
+}
+.like-cart{
+	width:100%;
+	height:70px;
+	padding:10px;
+}
+.like-cart>img{
+	width : 40px;
+	height:40px;
+}
+
+.product h1 {
+	color: rgb(205, 205, 154);
+	font-size: 40px;
+	font-weight:300;
+	text-align: center;
+	line-height: 300px;
+}
+.paging-area{
+	padding-top : 50px;
+	margin:auto;
+	clear:both;
+}
+.paging-area>ul{
+	list-style : none;
+	display:flex;
+	padding-left:600px;
+}
+.paing-area li{
+	width : 20px;
+	height:20px;
+}
+.keyword{
+	width:315px;
+	height : 25px;
+	background:beige;
+	position:relative;
+	display:flex;
+}
+.keyword>button{
+	width:20px;
+	height:20px;
+
+}
+.keyword>div{
+	width:280px;
+}
+.btn-selected{
+	background:#466D1D;
+}
+.btn-not{
+	background: #98BF64;
+}
+
+<!--product-detail -->
+.product-content {
+	width: 1000px;
+	margin: auto;
+}
+#product-top {
+	width: 100%;
+	height:600px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#main-pic {
+	width: 450px;
+	height: 500px;
+}
+
+#main-pic>img {
+	width: 100%;
+	height: 100%;
+	padding: 1px;
+}
+/*--간단한 제품 정보(상단)--*/
+#product-info {
+	width: 550px;
+	height: 500px;
+	align-items: center;
+	justify-content: center;
+}
+
+#productTitle {
+	display: flex;
+	height: 90px;
+	margin-left:10px;
+	background:rgb(234, 226, 213);
+	opacity:0.9;
+}
+
+#productName {
+	width: 80%;
+	height: 100%;
+	text-align: center;
+}
+
+#productDescription {
+	width: 100%;
+	height: 400px;
+	padding:10px;
+}
+#productDescription>div{
+	width:100%;
+	margin-bottom:10px;
+}
+#brandStory{
+	height:300px;
+}
+#briefInfo{
+	height:100px;
+}
+
+#like-star {
+	width: 20%;
+	height: 100%;
+}
+
+#like {
+	width: 100%;
+	height: 55%;
+	padding-left:25px;
+	padding-top:10px;
+}
+#like>img{
+	width: 40px;
+	height:40px;
+}
+#star {
+	width: 100%;
+	height: 45%;
+	text-align:center;
+	padding:5px;
+}
+#choice input, select{
+	width: 70%;
+	height: 30px;
+	border: none;
+	margin-left:20px;
+	margin-right:20px;
+}
+#choice p{
+	text-align:center;
+	color:orangered;
+	padding:0;
+	margin:0;
+}
+#picture-area {
+	width: 100%;
+}
+
+#picture-area > img {
+	width: 800px;
+	height: 600px;
+	margin-left : 25%;
+}
+.detail-info, .extra-info{
+	width : 800px;
+	margin:auto;
+}
+#review-area{
+	width:800px;
+	margin-left : 25%;
+}
+#review-area>h2{
+	cursor:pointer;
+}
+.fakebtn{
+	border-radius:5px;
+	background:beige;
+	padding:1px;
+}
+#review-area img{
+	width:150px;
+	height:130px;
+}
+#review-area td{
+	padding : 5px 20px 5px 20px;
+}

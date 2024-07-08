@@ -98,34 +98,31 @@
     		<script>
     		// 1. 전역함수 선언
     			var checkLikeCount = function(){
-	    					
+
 			    			var deferred = $.Deferred();
-			    			
 			    			$.ajax({
 			    				url : 'checkLike.ch',
 			    				data : {
 			    					userNo : ${ sessionScope.loginUser.userNo },
 			    					activityNo : ${ challenge.activityNo }
 			    				},
-			    				// 체크여부 확인 완료
 			    				success : function(data){ 
 			    					deferred.resolve(data);
+
 			    				
 			    					if(data == 'success'){ // 체크한 회원이면
+
 			    						$('#like').html('💚');
 			    					} else{
 			    						$('#like').html('🤍');
 			    					}
 			    				},
-			    				// 체크여부 확인 불가
 			    				error : function(err){
 			    					deferred.reject(err);
 			    				}
-			    				
-			    			});//ajax
-		    			
+			    			});
 		    			return deferred.promise();	
-		    		};// checkLikeCount
+		    		};
 		    		
 		    // 2. 페이지 로드되자마자 실행될 것
     			$(function(){
@@ -142,9 +139,12 @@
     		  $(function(){		
 				$('#like').on('click',  function(){
 					checkLikeCount()
-		    		.done(function(checked){		
+
+
+		    		.done(function(checked){// 체크여부 확인 완료했을 때
 		    			const count = parseInt($('#count').html()); 
-					    			if(checked == 'success'){ 		
+					    			if(checked == 'success'){ 	
+
 						    				$.ajax({
 				    		    				url : 'deleteLike.ch',
 				    		    				type : 'POST',
@@ -153,17 +153,24 @@
 				    		    					activityNo : ${ challenge.activityNo },
 				    		    				},
 				    		    				success : function(result){ 
-				    		    					if(result == 'success' ){	
+
+				    		    					if(result == 'success' ){
 				    		    						$('#count').html(count - 1);
-				    		    						$('#like').html('🤍');
-				    		    					} 
+				    		    						$('#like').html('🤍');		
+				    		    					} else {
+				    		    						console.log('좋아요 한행 삭제 실패');
+				    		    					}
+
 				    		    				},
 				    		    				error : function(){
 				    		    					console.log('decraese연결 실패');
 				    		    				}
 					    				})
-					    			}
-					    			else { 
+
+					    			}//if 
+					    			
+					    			else { // 처음 체크하거나 취소후 재체크하는 회원이라면
+
 						    				$.ajax({
 							    				url : 'insertLike.ch',
 							    				type : 'POST',
@@ -171,8 +178,10 @@
 							    					userNo : ${ sessionScope.loginUser.userNo },
 							    					activityNo : ${ challenge.activityNo },
 							    				},
+
 							    				success : function(result){     				
 							    					if(result == 'success'){ 	    					
+
 							    						$('#count').html(count + 1);
 							    						$('#like').html('💚');
 							    					} 
@@ -180,14 +189,17 @@
 							    				error : function(){					
 							    					console.log('increase연결 실패'); 
 							    				}
-					    					})
-					    			}
-					    		})
+
+					    				})
+					    			}// else	
+					    		})// done
 						    	.fail(function(message){
 						    			console.log('좋아요수 체크 실패');
-						    	});
+						    	});// fail
 					});
     		  })
+    		
+
 		    </script>
 		    		
     		
@@ -258,7 +270,9 @@
 				    enctype: 'multipart/form-data',
 				    data: formData,
 					success : function(data){
+
 						if(data === 'success'){
+
 							currentPage = 1;
 							selectMore(currentPage);
 							$('input').val('');
@@ -314,26 +328,39 @@
 							currentPage : currentPage
 						},
 						success : function(result){
-							let resultStr = '';
-							for(let i in result){
-								resultStr +=
-												'<div>'
-												+'<img src="' + result[i].changeName + '"/>'
-												+'<span><b>'+ result[i].achievementTitle + '</b></span>'
-												+'<div>'+ result[i].achievementContent + '</div>'
-												+'</div>'
-								if(result[i].userNo == ${loginUser.userNo}){		
-									resultStr += '<div>'
-												 	+'<button class="delete-btn">삭제</button>'
-												 	+'<p>' + result[i].achievementNo + '</p>'
-												 	+'</div>'
-								}; 
-							};
-							if(currentPage != 1){ 
-								$('#achievement-content').append(resultStr);
-							} else{
-								$('#achievement-content').html(resultStr);
-							};
+
+							console.log("난 result : " + result);
+							if(result != ''){
+									let resultStr = '';
+									for(let i in result){
+										resultStr +=
+														'<div>'
+														+'<img src="' + result[i].changeName + '"/>'
+														+'<span><b>'+ result[i].achievementTitle + '</b></span>'
+														+'<span>'+ result[i].userNo + '</span>'
+														+'<div>'+ result[i].achievementContent + '</div>'
+														+'</div>'
+					 			
+										if(result[i].userNo == ${loginUser.userNo}){		
+											resultStr += '<div>'
+															+'<button class="update-btn">수정하기</button>'
+														 	+'<button class="delete-btn">삭제하기</button>'
+														 	+'<p>' + result[i].achievementNo + '</p>'
+														 	+'</div>'
+										}; 
+								
+									};//for
+								
+									/** 현재 페이지에 따라 더하거나 보여주기 */
+									if(currentPage != 1){ 
+										$('#achievement-content').append(resultStr);
+									} else{
+										$('#achievement-content').html(resultStr);
+									};
+							}else{
+								$('#achievement-content').html(	'인증글이 없습니다.');
+							}
+
 						},
 						error : function(){
 							console.log('인증글 보기 실패');

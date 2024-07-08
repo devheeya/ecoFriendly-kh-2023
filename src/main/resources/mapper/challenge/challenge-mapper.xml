@@ -11,13 +11,11 @@
 		<result column="START_DATE" property="startDate" />
 		<result column="SUCCESS_LIMIT" property="successLimit" />
 		<result column="VIEW_COUNT" property="viewCount" />
-	
 		<result column="ORIGIN_NAME" property="originName" />
 		<result column="CHANGE_NAME" property="changeName" />
 		<result column="CHALLENGE_CONTENT" property="challengeContent" />
 		<result column="USER_NO" property="userNo" />
 		<result column="CATEGORY_NO" property="categoryNo" />
-		
 		<result column="END_DATE" property="endDate" />
 		<result column="CHALLENGE_PLACE" property="challengePlace" />
 		<result column="ACHIEVEMENT_COUNT" property="achievementCount" />

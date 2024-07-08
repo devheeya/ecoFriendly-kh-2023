@@ -15,3 +15,5 @@ public class ApproveRequest {
 	private int userNo;
 	private String pgToken;
 }
+
+

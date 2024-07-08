@@ -5,11 +5,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,9 +32,11 @@ import com.kh.eco.common.model.template.Pagination;
 import com.kh.eco.common.model.vo.PageInfo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class BookController {
 	
 	private final BookService bookService;
@@ -41,8 +44,8 @@ public class BookController {
 	private static final String ALADINSERVICEKEY = "ttbrkd_gus_wl1746003";
 	
 	// 알라딘 api 리스트 메소드
-	public ArrayList<Book> selectBookList(int maxResult, String query, int currentPage) 
-	throws IOException{
+	public ArrayList<Book> selectBookList(int maxResult, String query, int currentPage) {
+		try {
 		String url = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
 		url += "?TTBKey=" + ALADINSERVICEKEY;
 		url += "&Query=" + URLEncoder.encode(query, "UTF-8");
@@ -53,9 +56,12 @@ public class BookController {
 		url += "&Cover=big";
 		url += "&start=" + currentPage;
 		
+		log.info(url);
+		
 		URL requestUrl = new URL(url);
 		HttpURLConnection urlConnection = (HttpURLConnection)requestUrl.openConnection();
 		urlConnection.setRequestMethod("GET");
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 		
 		// 결과 받기
@@ -80,13 +86,20 @@ public class BookController {
 		}
 		
 		br.close();
+		
 		urlConnection.disconnect();
 		
+		
 		return bookList;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// 알라딘 api 상품조회 메소드
 	public static Book bookLookUp(String ISBN) throws IOException {
+		try {
 		String url = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
 		url += "?TTBKey=" + ALADINSERVICEKEY;
 		url += "&ItemId=" + ISBN;
@@ -124,15 +137,18 @@ public class BookController {
 		urlConnection.disconnect();
 		
 		return book;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
-	// 글자 바이트 체크 메소드
 	public static boolean checkText(String content, int length) 
 	throws Exception{
 		if(content.getBytes().length < length) {
 			return true;
 		}else {
-			System.out.println("값이 너무 큽니다.");
+			log.info("값이 너무 큽니다.");
 			throw new Exception();
 		}
 	}
@@ -140,13 +156,13 @@ public class BookController {
 	
 	// 메인화면 메소드
 	@GetMapping("book")
-	public String bookMain(@RequestParam(value="cPage", defaultValue="1") int currentPage, Model model) 
-	throws IOException {
+	public String bookMain(@RequestParam(value="cPage", defaultValue="1") int currentPage, 
+																		  Model model) {	
 		
 		List<Book> bookList = selectBookList(20, "환경", currentPage);
 		List<Book> countList = bookService.countList();
 		
-		HashMap<String, Integer> countMap = new HashMap<>();
+		Map<String, Integer> countMap = new HashMap<String, Integer>();
 		for (Book book : countList) {
 		    countMap.put(book.getISBN13(), book.getBookCount());
 		}
@@ -154,7 +170,7 @@ public class BookController {
 		for (Book book : bookList) {
 		    String isbn = book.getISBN13();
 		    if (countMap.containsKey(isbn)) {
-		        Integer bookCount = countMap.get(isbn);
+		        int bookCount = countMap.get(isbn);
 		        book.setBookCount(bookCount);
 		    }
 		}
@@ -240,34 +256,26 @@ public class BookController {
 	}
 	
 	
-	// 상세페이지 메소드
-	@RequestMapping("bookDetail.bk")
-	public String bookDetail(String ISBN, Model model, int count, HttpSession session) 
-	throws IOException {
+	@PostMapping("bookDetail.bk")
+	public String bookDetail(String ISBN, Model model, 
+							 int count, HttpSession session) throws IOException{
+		
+			int countBook = 1;
 		
 			Book book = bookLookUp(ISBN);
 			
-			if(count == 0) { // 조회수가 0일때
-				int bookCount = bookService.insertBook(book);
-				if(bookCount > 0) { // 조회수 추가 성공
-					book.setBookCount(bookCount);
-					model.addAttribute("b", book);
-					return "book/book/bookDetail";
-				} else { // 조회수 추가 실패
-					session.setAttribute("failBookAlert", "조회 실패");
-					return "redirect:book";
+			int result = bookService.bookDetail(book, count);
+			
+			if(result > 0) {
+				if(count > 0) {
+					countBook = bookService.countBook(ISBN);
 				}
-			} else { // 조회수가 1 이상일때
-				int bookCount = bookService.increaseBook(ISBN);
-				if(bookCount > 0) { // 조회수 증가 성공
-					int countBook = bookService.countBook(ISBN);
-					book.setBookCount(countBook);
-					model.addAttribute("b", book);
-					return "book/book/bookDetail";
-				} else { // 조회수 증가 실패
-					session.setAttribute("failBookAlert", "조회 실패");
-					return "redirect:book";
-				}
+				book.setBookCount(countBook);
+				model.addAttribute("b", book);
+				return "book/book/bookDetail";
+			} else { 
+				session.setAttribute("failBookAlert", "조회 실패");
+				return "redirect:book";
 			}
 	}
 	
@@ -283,9 +291,9 @@ public class BookController {
 	// 독후감 게시판 검색목록 리스트 조회
 	@GetMapping("reportSearch.bk")
 	public ModelAndView searchReportList(@RequestParam(value="cPage", defaultValue="1") int currentPage, 
-			ModelAndView mv, String reportSearchOption, String reportSearchValue, HttpSession session) {
+		   ModelAndView mv, String reportSearchOption, String reportSearchValue, HttpSession session) {
 		
-		HashMap<String, String> map = new HashMap();
+		Map<String, String> map = new HashMap<String, String>();
 		map.put("condition", reportSearchOption);
 		map.put("keyword", reportSearchValue);
 		

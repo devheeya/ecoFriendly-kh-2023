@@ -1,13 +1,13 @@
 package com.kh.eco.book.model.service;
 
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +17,6 @@ import com.kh.eco.book.model.vo.Book;
 import com.kh.eco.book.model.vo.BookReply;
 import com.kh.eco.book.model.vo.BookReport;
 import com.kh.eco.book.model.vo.BookReportReply;
-import com.kh.eco.book.model.vo.ReportBlack;
-import com.kh.eco.book.model.vo.ReportReplyBlack;
 import com.kh.eco.common.model.vo.PageInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -46,13 +44,12 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public int insertBook(Book book) {
-		return bookDao.insertBook(sqlSession, book);
-	}
-
-	@Override
-	public int increaseBook(String ISBN) {
-		return bookDao.increaseBook(sqlSession, ISBN);
+	public int bookDetail(Book book, int count) {
+		if(count == 0) { 
+			return bookDao.insertBook(sqlSession, book);
+		} else { 
+			return bookDao.increaseBook(sqlSession, book.getISBN13());
+		}
 	}
 
 	@Override
@@ -61,23 +58,32 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public int insertBookMark(HashMap map) {
-		return bookDao.insertBookMark(sqlSession, map);
+	public Map<String, Object> 
+	bookMarkMenu(Map<String, Object> map, String className) {
+		Map<String, Object> resultMap = 
+					new HashMap<String, Object>();
+		if(className.equals("bookmark")) {
+			className = "bookmark abled";
+			resultMap.put("result", 
+						  bookDao.insertBookMark(sqlSession, map));
+			resultMap.put("className", className);
+		} else if(className.equals("bookmark abled")) {
+			className = "bookmark";
+			resultMap.put("result", 
+					      bookDao.removeBookMark(sqlSession, map));
+			resultMap.put("className", className);
+		}
+		return resultMap;
 	}
 
 	@Override
-	public int removeBookMark(HashMap map) {
-		return bookDao.removeBookMark(sqlSession, map);
-	}
-
-	@Override
-	public int ajaxSelectBookMark(HashMap map) {
+	public int selectBookMark(Map map) {
 		return bookDao.ajaxSelectBookMark(sqlSession, map);
 	}
 
 	@Override
-	public int ajaxInsertBookReply(HashMap map) {
-		return bookDao.ajaxInsertBookReply(sqlSession, map);
+	public int insertBookReply(Map map) {
+		return bookDao.insertBookReply(sqlSession, map);
 	}
 
 	@Override
@@ -103,16 +109,21 @@ public class BookServiceImpl implements BookService{
 
 	@Override
 	public List<BookReport> selectReportList(PageInfo pi) {
-		return bookDao.selectReportList(sqlSession, createRowBounds(pi));
+		// (pi.getCurrentPage() - 1) * pi.getBoardLimit() ~ pi.getBoardLimit() * pi.getCurrentPage()
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("startLimit", (pi.getCurrentPage() - 1) * pi.getBoardLimit());
+		map.put("endLimit", pi.getBoardLimit() * pi.getCurrentPage());
+		
+		return bookDao.selectReportList(sqlSession, map);
 	}
 	
 	@Override
-	public int searchReportCount(HashMap map) {
+	public int searchReportCount(Map map) {
 		return bookDao.searchReportCount(sqlSession, map);
 	}
 
 	@Override
-	public List<BookReport> searchReportList(HashMap map, PageInfo pi) {
+	public List<BookReport> searchReportList(Map map, PageInfo pi) {
 		return bookDao.searchReportList(sqlSession, map, createRowBounds(pi));
 	}
 	
@@ -222,7 +233,7 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public List<ReportBlack> adminReportBlack(PageInfo pi) {
+	public List<BookReport> adminReportBlack(PageInfo pi) {
 		return bookDao.adminReportBlack(sqlSession, createRowBounds(pi));
 	}
 
@@ -232,7 +243,7 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public List<ReportReplyBlack> adminReportReplyBlack(PageInfo pi) {
+	public List<BookReportReply> adminReportReplyBlack(PageInfo pi) {
 		return bookDao.adminReportReplyBlack(sqlSession, createRowBounds(pi));
 	}
 
@@ -257,27 +268,6 @@ public class BookServiceImpl implements BookService{
 	}
 
 
-	
-
-	
-
-	
-
-
-	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

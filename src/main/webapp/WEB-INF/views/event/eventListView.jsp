@@ -134,7 +134,7 @@
 	#modal-body{
 	border : 1px solid teal;
 		display : flex;
-		width : 100%;
+		width : 100%;/...
 		justify-content;
 	}
 
@@ -145,10 +145,7 @@
 </style>
 
 <script>
-		//console.log('현재데이터 내용 : ${list}'); // JAVA + JS는 좋지 않아요 ajax를 자바대신 쓰던지
-		//DOMContentLoaded Event DOM Tree가 모두 로딩된 이후에 발생하는 이벤트
       document.addEventListener('DOMContentLoaded', function() {
-
 	        var calendarEl = document.getElementById('calendar');
 	        var calendar = new FullCalendar.Calendar(calendarEl, {
 		          initialView: 'dayGridMonth',
@@ -158,7 +155,9 @@
 							<c:forEach var="e" items="${list}">
 								{ 
 									id : '${e.activityNo}',
-									title: '${e.eventTitle}',  
+
+									title: '${e.eventTitle}', 
+
 									start: '${e.eventDate}',
 									 extendedProps: {
 										 place : '${e.eventPlace}',
@@ -171,38 +170,36 @@
 							</c:forEach>
 						</c:if> 
 					],	
-					 eventContent: function (arg) {
-				            var event = arg.event;
+
+					 eventContent: function (arg) {	
+				            var event = arg.event;            
 				            var customHtml = '';
-				            customHtml += "<div class='r10 font-xxs font-bold' style='overflow: hidden;'>" + event.title + "</div>";       
-				            customHtml += "<div class='r10 font-xxs font-bold' style='overflow: hidden;'>" + event.start + "</div>";
-				            customHtml += "<div class='r10 highlighted-badge font-xxs font-bold'>" + event.extendedProps.place +  "</div>";
+				            customHtml += "<div class='r10 font-xxs font-bold' style='overflow: hidden;'>" + event.title + "</div>";
+				            customHtml += "<div class='r10 font-xxs font-bold' style='overflow: hidden;'>" + event.start + "</div>";		            
+				            customHtml += "<div class='r10 highlighted-badge font-xxs font-bold'>" + event.extendedProps.place +  "</div>";     
 				            switch(event.extendedProps.categoryNo){
-				            case 1 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR19-1BXMU8CHpgW_o4ef_cMsKFAubWdsfsCyzeUgwcqD7CBv0WwUT64Y72HnUgoNhtLeE&usqp=CAU'   +  "'/>"; break;
-				            case 2 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPJBfEwiOl6PHNVLBpR2ooLZf1gx5fYI9d6bn6TZYfGRnImcjHHII11hSwlsibXcf_tBA&usqp=CAU'   +  "'/>"; break;
-				            case 3 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6lm87onPTFXI7buPjllu_ocW0774X3gVW4mONbR6QmmEvnVM03KpEmSGibNCONwJ9kEA&usqp=CAU'   +  "'/>"; break;
-				            case 4 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0iX_NJSlpi54a2A2_yvf4wNzmIUPTmM9OHw&usqp=CAU'   +  "'/>"; break;
-				            default :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfXljjKETOFvt1Uq8HnOM2b1ngsAP3kLEttg&usqp=CAU'   +  "'/>";
-				     		}
-				            return { html: customHtml }
-			        }
-				
+					            case 1 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR19-1BXMU8CHpgW_o4ef_cMsKFAubWdsfsCyzeUgwcqD7CBv0WwUT64Y72HnUgoNhtLeE&usqp=CAU'   +  "'/>"; break;
+					            case 2 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPJBfEwiOl6PHNVLBpR2ooLZf1gx5fYI9d6bn6TZYfGRnImcjHHII11hSwlsibXcf_tBA&usqp=CAU'   +  "'/>"; break;
+					            case 3 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6lm87onPTFXI7buPjllu_ocW0774X3gVW4mONbR6QmmEvnVM03KpEmSGibNCONwJ9kEA&usqp=CAU'   +  "'/>"; break;
+					            case 4 :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0iX_NJSlpi54a2A2_yvf4wNzmIUPTmM9OHw&usqp=CAU'   +  "'/>"; break;
+					            default :   customHtml += "<img  style='width:100%; height : 100px;' src='"+ 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfXljjKETOFvt1Uq8HnOM2b1ngsAP3kLEttg&usqp=CAU'   +  "'/>";
+				            }
+					   	 	return { html: customHtml }
+				        }
+
 			});// var calendar
 			calendar.render();
-	        
-	        calendar.on('dateClick', function(e){
-				
-	        		//해당 날짜 값에 주입하고
-	        		$('#eventDate').val(e.dateStr);
-	        		// 모달창 띄우고
-	        		$('#insertModal').modal('show');
-	        	
-	        });
-	        
-	        calendar.on('eventClick', function(e){
 			
-				 event = e.event._def;
+	        calendar.on('dateClick', function(e){
+	        		$('#eventDate').val(e.dateStr);
+	        		$('#insertModal').modal('show');
+	        });
+	        calendar.on('eventClick', function(e){
+
 	
+
+				 event = e.event._def;
+
 				 $('#detail-content').children().eq(0).html(event.title);
 				 $('#detail-content').children().eq(1).html(event.extendedProps.categoryNo);
 				 $('#detail-content').children().eq(2).html(event.extendedProps.content);
@@ -210,11 +207,13 @@
 				 $('#detail-content').children().eq(4).html(event.extendedProps.participants);
 				 $('#detail-content').children().eq(5).html(event.extendedProps.imageurl);
 				 $('#detail-content').children().eq(6).html(event.publicId);
-	
+
 		         $('#detailModal').modal('show');  	
 	        });
 	        
 	        $('#insertEvent').on('click', () => {	
+
+
 	    		const formData = new FormData();
 	    		formData.append('eventTitle', $('#eventTitle').val());
 	    		formData.append('eventContent', $('#eventContent').val());
@@ -222,7 +221,7 @@
 	    		formData.append('eventDate', $('#eventDate').val());
 	    		formData.append('upfile', $('#upfile')[0].files[0]);
 	    		formData.append('categoryNo', $('#categoryNo').val());
-	    				
+
 	    		$.ajax({
 	    			url : 'insert.ev',
 	    			type : 'POST',
@@ -230,6 +229,7 @@
 	    		    contentType: false,
 	    		    enctype: 'multipart/form-data',
 	    		    data: formData,
+
 	    			success : data => {	    	
 	    				if(data === 'success'){
 	    					$('#insertModal').modal('hide');		
@@ -240,13 +240,14 @@
     					} else{
     						alert('이벤트 등록 실패!');
     					}
+
 	    			},
 	    			error : () => {
 	    				alert('이벤트를 등록할 수 없습니다.');
 	    				$('#insertModal').modal('hide');
 	    			}
 	    		})
-	    	});//insertE
+	    	});
 	    	
 	    	$('#updateForm').on('click', function(){
 	    	
