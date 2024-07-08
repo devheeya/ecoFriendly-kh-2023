@@ -1,9 +1,11 @@
 package com.kh.eco.product.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.parser.ParseException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.kh.eco.product.model.service.ProductService;
 import com.kh.eco.product.model.vo.Cart;
+import com.kh.eco.product.model.vo.KakaoPay;
 import com.kh.eco.product.model.vo.ProductLike;
 import com.kh.eco.user.model.vo.User;
 
@@ -25,7 +28,8 @@ public class AjaxProductController {
 	private final ProductService productService;
 	
 	@RequestMapping(value = "product.like", produces="text/html; charset=UTF-8")
-	public String like(ProductLike like) {
+	public String like(ProductLike like, HttpSession session) {
+		like.setUserNo(getUserNo(session));
 		if(checkLike(like).equals("Y")) {
 			return productService.removeLike(like)==1? "removed" : "remove failed";
 		}else {
@@ -55,8 +59,8 @@ public class AjaxProductController {
 		return new Gson().toJson(productService.reviewList(productNo));
 	}
 	@GetMapping(value="getLikes.pr", produces="application/json; charset=UTF-8")
-	public String ajaxGetLikes(int userNo) {
-		return new Gson().toJson(productService.getLikes(userNo));
+	public String ajaxGetLikes(HttpSession session) {
+		return new Gson().toJson(productService.getLikes(getUserNo(session)));
 	}
 	@PostMapping(value="update.cart", produces="html/text; charset=UTF-8")
 	public String updateQty(Cart cart) {
@@ -64,7 +68,8 @@ public class AjaxProductController {
 	}
 
 	@PostMapping(value="add.cart", produces="html/text; charset=UTF-8")
-	public String addCart(Cart cart) {
+	public String addCart(Cart cart, HttpSession session) {
+		cart.setUserNo(getUserNo(session));
 		String result = productService.checkCart(cart);
 		if(result == null) {//장바구니에 아이템이 존재하지 않을 때
 			return productService.addCart(cart)>0? "added":"failed";
@@ -85,8 +90,7 @@ public class AjaxProductController {
 	@GetMapping(value="check.review", produces="application/json; charset=UTF-8")
 	public String checkReview(int orderNo) {
 		return new Gson().toJson(productService.checkReview(orderNo));
-	}
-	
+	}	
 
 	@GetMapping(value = "getKeywords", produces="application/json; charset=UTF-8")
 	public String getKeywords(String keyword) {
@@ -100,5 +104,10 @@ public class AjaxProductController {
 	public int getUserNo(HttpSession session) {
 		User loginUser = (User)session.getAttribute("loginUser");
 		return loginUser != null ? loginUser.getUserNo() : 0;
+	}
+	@RequestMapping(value="pay", produces="html/text; charset=UTF-8")
+	public String makePayment(KakaoPay pay) throws IOException, ParseException{
+		String pcUrl = productService.getPcUrl(pay);
+		return pcUrl;
 	}
 }

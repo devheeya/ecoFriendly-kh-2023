@@ -7,12 +7,12 @@
 <head>
 <meta charset="UTF-8">
 <title>주문내역 조회</title>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <style>
 /*--공통 스타일 --*/
 div {
@@ -205,7 +205,7 @@ h3 {
 						let $str = '';
 						if(e.length==0){
 							$('#writeReview input, textarea, select, button:submit').attr('disabled', true);
-							$('#writeReview textarea').text(' \n감사합니다!\n모든 상품에 리뷰를 등록하셨습니다.');
+							$('#writeReview textarea').text('\n모든 상품에 리뷰를 등록하셨습니다.');
 						}
 						else{
 							for(let i in e){
@@ -217,17 +217,16 @@ h3 {
 							$('#writeReview select').html($str);
 							$('#writeReview input[name=orderNo]').val(ono);	
 						}
-
-					},
-					error : ()=>{
-						console.log('에이젝스는 타입이다');
 					}
 				})
 			}
 		</script>
 	</div>
-	</div>
-	
+	</div>	
+
+
+
+<jsp:include page="../common/footer.jsp"/>
 		<!-- Modal -->
 			<div class="modal fade" id="writeReview">
 				<div class="modal-dialog modal-lg">
@@ -259,9 +258,5 @@ h3 {
 					</div>
 				</div>
 			</div>
-
-
-
-<jsp:include page="../common/footer.jsp"/>
 </body>
 </html>

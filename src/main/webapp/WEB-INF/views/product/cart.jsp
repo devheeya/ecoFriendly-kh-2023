@@ -81,9 +81,8 @@ h3{
 	margin:0;
 }
 .qty>input{
-	padding:5px 2px 5px 10px;
-	width:30px;
-	text-align:center;
+	width:40px;
+	color:black;
 }
 
 

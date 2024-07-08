@@ -7,142 +7,9 @@
 <meta charset="UTF-8">
 <title>상품 상세보기</title>
 <!-- jQuery 라이브러리 -->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-<style>
-div {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-	border : 1px solid transparent;
-}
-
-.product-content {
-	width: 1000px;
-	margin: auto;
-}
-
-#product-top {
-	width: 100%;
-	height:600px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-#main-pic {
-	width: 450px;
-	height: 500px;
-}
-
-#main-pic>img {
-	width: 100%;
-	height: 100%;
-	padding: 1px;
-}
-/*--간단한 제품 정보(상단)--*/
-#product-info {
-	width: 550px;
-	height: 500px;
-	align-items: center;
-	justify-content: center;
-}
-
-#productTitle {
-	display: flex;
-	height: 90px;
-	margin-left:10px;
-	background:rgb(234, 226, 213);
-	opacity:0.9;
-}
-
-#productName {
-	width: 80%;
-	height: 100%;
-	text-align: center;
-}
-
-#productDescription {
-	width: 100%;
-	height: 400px;
-	padding:10px;
-}
-#productDescription>div{
-	width:100%;
-	margin-bottom:10px;
-}
-#brandStory{
-	height:300px;
-}
-#briefInfo{
-	height:100px;
-}
-
-#like-star {
-	width: 20%;
-	height: 100%;
-}
-
-#like {
-	width: 100%;
-	height: 55%;
-	padding-left:25px;
-	padding-top:10px;
-}
-#like>img{
-	width: 40px;
-	height:40px;
-}
-#star {
-	width: 100%;
-	height: 45%;
-	text-align:center;
-	padding:5px;
-}
-#choice input, select{
-	width: 70%;
-	height: 30px;
-	border: none;
-	margin-left:20px;
-	margin-right:20px;
-}
-#choice p{
-	text-align:center;
-	color:orangered;
-	padding:0;
-	margin:0;
-}
-#picture-area {
-	width: 100%;
-}
-
-#picture-area>img {
-	width: 800px;
-	height: 600px;
-	margin-left : 100px;
-
-}
-.detail-info, .extra-info{
-	width : 800px;
-	margin:auto;
-}
-#review-area>h2{
-	cursor:pointer;
-}
-.fakebtn{
-	border-radius:5px;
-	background:beige;
-	padding:1px;
-}
-#review-area img{
-	width:150px;
-	height:130px;
-}
-#review-area td{
-	padding : 5px 20px 5px 20px;
-}
-</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet" href="resources/css/productStyle.css"/> 
+<script type="text/javascript" src="resources/js/productScript.js"></script>
 </head>
 <body>
 	<jsp:include page="../common/header.jsp" />
@@ -152,7 +19,7 @@ div {
 				<img src="${p.mainImg }">
 			</div>
 			<div id="product-info">
-			<form action="listOrderForm" method="post">
+			<form action="listOrderForm" method="get">
 				<div id="productTitle">
 					<div id="productName">
 						<h1>${p.productName }</h1>
@@ -170,7 +37,7 @@ div {
 						</c:otherwise>
 					</c:choose>
 						<div id="star">
-						<a href="product.review?productNo=${p.productNo }">${review.starRate }/5</a>
+						<a href="#">${review.starRate }/5</a>
 						 (${review.reviewNo }개) 
 						</div>
 					</div>
@@ -218,109 +85,7 @@ div {
 			</form>
 			</div>
 		</div>
-				<script>
-					function optionCheck(){
-						if($('#choice select').val() == 0){
-							alert('옵션을 먼저 선택 해주세요.');
-							return false;
-						}
-					}
-					function addCart(){
-						let $option = $('#choice select').val();
-						if($option == 0){
-							alert('상품 옵션을 선택해주세요.');
-							return false;
-						}
-						else{
-							$.ajax({
-								url : 'add.cart',
-								method : 'POST',
-								data : {
-									userNo : '${sessionScope.loginUser.userNo}',
-									optionNo : $option,
-									qty : $('#choice input[type=number]').val()
-								},
-								success : e =>{
-									if(e == 'added'){
-										alert('장바구니에 추가되었습니다.');
-									}
-									else if(e == 'failed'){
-										alert('장바구니 추가에 실패했습니다. 다시 한 번 도전해주세요.');
-									}
-									else{
-										alert('이미 장바구니에 존재하는 상품입니다.\n 추가일자 :'+e);
-									}
-								},
-								error : ()=>{
-									console.log('ajax망..'); 
-								}
-								
-							})
-							
-						}
-						
-					}
-					function askLogin(){
-						if(confirm('로그인이 필요한 기능입니다. 로그인 화면으로 이동하시겠습니까?')){
-						location.href='login';
-						}
-					}
-					function like(pno, th){
-						console.log(pno);
-						$.ajax({
-							url : 'product.like',
-							data : {
-								productNo : pno,
-								userNo : '${sessionScope.loginUser.userNo}'
-							},
-							success : e => {
-								if(e == 'added'){
-									$(th).attr('src', 'resources/images/heart-solid.svg');
-								}
-								else if(e == 'removed'){
-									$(th).attr('src', 'resources/images/heart-regular.svg');
-								};
-							},
-							error : e => {
-								console.log('세상은 요지경~~');
-							}
-						})
-					}
-					$(()=>{
 
-						$('#choice select').change(()=>{
-							$.ajax({
-								url : 'getPrice',
-								data : {optionNo : $('#choice select').val()},
-								success : price =>{
-									//$qty = $('#choice input').val();
-									//$price = $qty*Number(price.replace(',', ''));
-									//console.log($price);
-									//console.log($qty);
-									$('#price').text(price+'원');
-									$('#totalPrice').text(price+'원');
-									$('#choice input').attr('disabled', false);
-								},
-								error : ()=>{
-									console.log('공부 더해 이자기식아!');
-								}
-							})
-						});
-
-						$('#choice input').change(()=>{
-							if($('#choice select').val() == 0){
-								alert('옵션을 먼저 선택 해주세요.');
-								$('#choice select').focus();
-							}else{
-								
-							let price = $('#choice span').text();
-							let totalPrice =parseInt(price.replace(',', ''))*parseInt($('#choice input[type=number]').val());
-							$('#totalPrice').text(totalPrice.toLocaleString()+'원');
-							}
-							
-						})
-					})
-				</script>
 		<div id="picture-area">
 			<div class="detail-info">
 				<h3>상품 설명</h3>
@@ -355,47 +120,30 @@ div {
 			 <div id="pagination-container"></div>
 			 </div>
 		</div>
-		<script>
-			let $reviews = $('#review-area>div');
-			$(()=>{		
-				$reviews.css('display', 'none');
-				$.ajax({
-					url:'product.review',
-					data:{productNo:${p.productNo}},
-					success: reviews => {
-						let html = template(reviews);
-						$reviews.html(html);
-					},
-					error:()=>{
-						alert('지겨웡~~~~~~~~~~');
-					}
-				});
-			});
-			function template(data){
-				let value = '<table><tbody>';
-				$.each(data, (index, item)=>{
-						value += '<tr>'
-							+ '<td rowspan="2"><img src="'+item.changeName+'"></td>'
-							+ '<td><span class="fakebtn">'+item.option+'</span> <b>'+item.reviewTitle+'</b></td>'
-							+'</tr>'
-							+'<tr>'
-							+ '<td>'+item.reviewContent+'</td>'
-							+'</tr>';
-				});
-				value += '</tbody></table>';
-				return value;
-			};
-			function showReviews(){
-				if($reviews.css('display') == 'none'){
-					$reviews.css('display', 'block');					
-				}
-				else{
-					$reviews.css('display', 'none');
-				}
-			}
-			
-		</script>
+
 	</div>
+	<script>
+		let $reviews = $('#review-area>div');
+		function showReviews(){
+			if($reviews.css('display') == 'none'){
+				$reviews.css('display', 'block');					
+			}
+			else{
+				$reviews.css('display', 'none');
+			}
+		};
+		$(()=>{
+			$reviews.css('display', 'none');
+			$.ajax({
+				url:'product.review',
+				data:{productNo:${p.productNo}},
+				success: reviews => {
+					let html = template(reviews);
+					$reviews.html(html);
+				}
+			});
+		})
+	</script>
 	
 	<br><br><br>
 	<br><br><br>

@@ -24,161 +24,9 @@
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
 <!-- Semantic UI theme -->
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+<link rel="stylesheet" href="resources/css/productStyle.css"/> 
+<script type="text/javascript" src="resources/js/productScript.js"></script>
 
-<style>
-@font-face {
-	font-family: 'SBAggroB';
-	src:
-		url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff')
-		format('woff');
-	font-weight: normal;
-	font-style: normal;
-}
-*{
-	border : 1px solid transparent;
-}
-div {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-
-}
-ul{
-	list-style:none;
-	padding:0px;
-	margin:0px;
-}
-#keyword-list>li{
-	cursor:pointer;
-}
-
-.outer {
-	height: 1100px;
-}
-.content {
-	width: 1200px;
-	height: 1000px;
-	margin: auto;
-}
-
-#searching-area {
-	height: 50px;
-	width: 400px;
-	margin: auto;
-}
-
-#searching-area input[type=text] {
-	width: 80%;
-	height: 90%;
-	border-left-width: 0;
-	border-right-width: 0;
-	border-top-width: 0;
-	border-bottom-width: 0;
-	background:beige;
-}
-#searching-area button{
-	width : 40px; 
-	height 40px;
-	background : none;
-	border : none;
-}
-#searching-area img {
-	width: 90%;
-	height: 90%;
-	float: right;
-	cursor : pointer;
-}
-
-#controll-area>select {
-	margin-left: 737px;
-	padding: 5px;
-	font-size: 20px;
-}
-
-#controll-area>button {
-	padding: 5px;
-	margin-left: 5px;
-	border-radius: 5px;
-	border: none;
-	background: #6EA0B1;
-	color: white;
-	font-size: 20px;
-}
-
-#product-area {
-	margin-top : 20px;
-	font-family: 'SBAggroB';
-	width: 100%;
-}
-
-#products {
-	width: 100%;
-}
-.product {
-	float:left;
-	width: 393px;
-	height: 400px;
-	cursor:pointer;
-	margin:2px;
-}
-.product-info{
-	width:100%;
-	height:310px;
-}
-
-.product table {
-	display: none;
-	padding-top: 50px;
-	padding-left: 100px;
-	text-align:center;
-}
-.like-cart{
-	width:100%;
-	height:70px;
-	padding:10px;
-}
-.like-cart>img{
-	width : 40px;
-	height:40px;
-}
-
-.product h1 {
-	color: rgb(205, 205, 154);
-	font-size: 40px;
-	font-weight:300;
-	text-align: center;
-	line-height: 300px;
-}
-.paging-area{
-	padding-top : 50px;
-	margin:auto;
-	clear:both;
-}
-.paging-area>ul{
-	list-style : none;
-	display:flex;
-	padding-left:600px;
-}
-.paing-area li{
-	width : 20px;
-	height:20px;
-}
-.keyword{
-	width:315px;
-	height : 25px;
-	background:beige;
-	position:relative;
-	display:flex;
-}
-.keyword>button{
-	width:20px;
-	height:20px;
-
-}
-.keyword>div{
-	width:280px;
-}
-</style>
 </head>
 <body>
 <jsp:include page="../common/header.jsp"/>
@@ -187,7 +35,7 @@ ul{
 		<br> <br>
 		<div class="content">
 			<div id="searching-area">
-			<form action = "product" method="post">
+			<form action = "product" method="get">
 			<c:choose>
 				<c:when test="${not empty map.orderBy }">
 					<input type="hidden" name = "orderBy" value="${map.orderBy}"> 
@@ -214,10 +62,9 @@ ul{
 			</div>
 
 			<div id="controll-area">
-				<button onclick="sort('F');">FOOD</button>
-				<button onclick="sort('G');">Eco Friendly Items</button>
-				<button onclick="sort('all');">ALL</button>
-
+				<button id="F" class="btn-not" onclick="sort(this);">FOOD</button>
+				<button id="G" class="btn-not" onclick="sort(this);">Eco Friendly Items</button>
+				<button id="all" class="btn-not" onclick="sort(this);">ALL</button>
 				<select>
 					<option value="latest">최신순</option>
 					<option value="view">조회순</option>
@@ -226,7 +73,11 @@ ul{
 					<option value="priceAsc">가격 낮은순</option>
 				</select>
 			</div>
-
+			<script>
+				$(()=>{
+					
+				})
+			</script>
 			<div id="product-area">
 				<div id="products">
 					<c:forEach var="p" items="${productList }">
@@ -278,7 +129,7 @@ ul{
 						
 							
 						<script>
-							$(function() {
+							$(()=> {
 								$('#${p.productNo}').css({
 									"background-image" : "url(${p.mainImg})",
 									"background-size" : "cover",
@@ -298,82 +149,22 @@ ul{
 				</div>
 				
 				<script>
-					function keywords(){
-						$.ajax({
-							url : 'getKeywords',
-							type : 'get',
-							data : {keyword:$('input[name=keyword]').val()},
-							success : e =>{
-								let str = '';
-								for(let i in e){
-									str += '<li onmouseover="setKeyword(this);">'
-										+ '<div class="keyword">'
-										+ '<div>'+e[i] +'</div>'
-										+ '<button onclick="removeKeyword(this);"> X </button>'
-										+'</div>'
-										+'</li>';
-								}
-								$('#keyword-list').html(str);
-							},
-							error : ()=>{
-								console.log('망해따..');
-							}
-						});
-					};
-					function removeKeyword(btn){
-						$(btn).parents('li').empty();
-					};
-					function setKeyword(li){
-						$('input[name=keyword]').val($(li).children().children('div').text());				
-					};
-					function sort(category){
-						location.href='product?category='+category;
-					};
-					function askLogin(){
-						alertify.confirm('로그인','로그인이 필요한 기능입니다. 로그인 화면으로 이동하시겠습니까?',
-								()=>{
-									location.href='login';
-								},
-								()=>{
-									alertify.error('비회원으로 계속합니다.');
-								});
-					};
-					function like(pno, th){
-						console.log(pno);
-						$.ajax({
-							url : 'product.like',
-							data : {
-								productNo : pno,
-								userNo : '${sessionScope.loginUser.userNo}'
-							},
-							success : e => {
-								let value = '';
-								value = e=='added'? 'resources/images/heart-solid.svg' : 
-										(e=='removed'? 'resources/images/heart-regular.svg': '');
-								if(value != '') $(th).attr('src', value);
-							},
-							error : e => {
-								console.log('세상은 요지경~~');
-							}
-						})
-					};
 					$(()=>{
+						$('#controll-area>button[id="${map.category}"]')
+						.removeClass("btn-not")
+						.addClass("btn-selected");
 						
 						$.ajax({
 							url : 'getLikes.pr',
-							data : {userNo : '${sessionScope.loginUser.userNo}'},
 							success: result =>{
 								for(let i in result){
-									$('.product').each((idnex, item)=>{
+									$('.product').each((index, item)=>{
 										if(result[i].productNo == item.id){
 										$(item).find('.like-cart>img').attr('src', 'resources/images/heart-solid.svg');
 											
 										}
 									})
 								}
-							},
-							error: ()=>{
-								console.log('에이젝스 망했어...');
 							}
 						});
 						
@@ -383,9 +174,6 @@ ul{
 					})
 				</script>
 				<c:if test = "${!empty loginUser}">
-					<script>
-
-					</script>
 				</c:if>
 				<c:if test="${not empty map.orderBy }">
 					<script>

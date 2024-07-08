@@ -3,6 +3,7 @@ package com.kh.eco.product.model.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.parser.ParseException;
 
@@ -23,7 +24,7 @@ public interface ProductService {
 	
 	int selectProductCount();
 	int selectCategoryCount(String category);
-	ArrayList<Product> selectProductList(HashMap map, PageInfo pi);
+	ArrayList<Product> selectProductList(Map<String, String> map, PageInfo pi);
 	ArrayList<Product> searchProduct(String keyword);
 	
 	int addLike(ProductLike like);

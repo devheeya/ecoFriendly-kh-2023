@@ -3,15 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="productMapper">
-<resultMap id="resultProductMap" type="product">
-	<result property="productNo" column="PRODUCT_NO"/>
-	<result property="productName" column="PRODUCT_NM"/>
-	<result property="mainImg" column="MAIN_IMG"/>
-	<result property="productInfo" column = "PRODUCT_INFO"/>
-	<result property="detailInfo" column = "DETAIL_INFO"/>
-	<result property="extraInfo" column = "EXTRA_INFO"/>
-	<collection property="optionList" ofType="option" resultMap = "optionMap"/>
-</resultMap>
+
 <resultMap id="resultLikeMap" type = "productLike">
 	<result property="productNo" column="PRODUCT_NO"/>
 	<result property="userNo" column="USER_NO"/>
@@ -31,19 +23,7 @@
 	<result property="price" column="PRICE"/>
 	<result property="userNo" column="USER_NO"/>
 </resultMap>
-<resultMap id ="optionMap" type="option">
-	<result column = "OPTION_NO" property = "optionNo"/>
-	<result column = "OPTION_NM" property="optionName"/>
-	<result column = "PRICE" property="price"/>
-</resultMap>
 
-<resultMap id="shoppingListMap" type="order">
-	<result property="orderNo" column="ORDER_NO" />
-	<result property="userNo" column="USER_NO" />
-	<result property="orderDate" column="ORDER_DATE"/>
-	<result property="addressNo" column="ADDRESS_NO"/>
-	<collection property="orderDetail" ofType="cart" resultMap="cartMap"/>
-</resultMap>
 
 <resultMap id="reviewMap" type="productReview">
 	<result property="reviewNo" column="REVIEW_NO"/>
@@ -69,7 +49,21 @@
 
 
 <!-- 상품 관련 -->
-<select id="selectProductList" resultMap="resultProductMap" parameterType="hashmap">
+<resultMap id ="optionMap" type="option">
+	<result column = "OPTION_NO" property = "optionNo"/>
+	<result column = "OPTION_NM" property="optionName"/>
+	<result column = "PRICE" property="price"/>
+</resultMap>
+<resultMap id="resultProductMap" type="product">
+	<result property="productNo" column="PRODUCT_NO"/>
+	<result property="productName" column="PRODUCT_NM"/>
+	<result property="mainImg" column="MAIN_IMG"/>
+	<result property="productInfo" column = "PRODUCT_INFO"/>
+	<result property="detailInfo" column = "DETAIL_INFO"/>
+	<result property="extraInfo" column = "EXTRA_INFO"/>
+	<collection property="optionList" ofType="option" resultMap = "optionMap"/>
+</resultMap>
+<select id="selectProductList" resultMap="resultProductMap" parameterType="map">
 SELECT 
 		PRODUCT_NO, 
 		PRODUCT_NM, 
@@ -80,32 +74,36 @@ SELECT
 	FROM 
 		TB_PRODUCT P
 	JOIN 
-		TB_PRODUCT_OPTION O USING (PRODUCT_NO)
+		TB_PRODUCT_OPTION O USING (PRODUCT_NO) 
+	LEFT JOIN (
+				  SELECT 
+				  		COUNT(*) "LIKE"
+				  		, PRODUCT_NO 
+				  	FROM 
+				  		TB_PRODUCT_LIKE 
+				  	GROUP 
+				  		BY 
+				  			PRODUCT_NO) USING(PRODUCT_NO) 
 	WHERE 
-		O.STATUS IN ('Y', 'O') 
+		 O.STATUS IN ('Y', 'O') 
 	AND 
 		P.STATUS = 'Y' 
 	<if test="category != 'all'">
-	AND CATEGORY = #{category} 
-	</if>
-	
+	AND CATEGORY = #{category} </if>	
 	<if test="keyword != null">
-	AND OPTION_NM LIKE '%${keyword}%' OR PRODUCT_NM LIKE '%${keyword}%' 
-	</if>
-	
+	AND OPTION_NM LIKE '%${keyword}%' OR PRODUCT_NM LIKE '%${keyword}%' </if>	
 	<if test="orderBy == 'latest' ">
-	ORDER BY CREATE_DATE DESC 
-	</if>
+	ORDER BY CREATE_DATE DESC </if>
 	<if test="orderBy == 'view'">
-	ORDER BY COUNT DESC 
-	</if>
+	ORDER BY COUNT DESC </if>
+	<if test="orderBy == 'like'">
+	ORDER BY "LIKE" DESC NULLS LAST </if>
 	<if test="orderBy == 'priceDesc'">
-	ORDER BY PRICE DESC 
-	</if>
+	ORDER BY PRICE DESC </if>
 	<if test="orderBy == 'priceAsc'">
-	ORDER BY PRICE ASC 
-	</if>
+	ORDER BY PRICE ASC </if>
 </select>
+
 <select id="searchProduct" resultMap="resultProductMap" parameterType="string">
 SELECT 
 		PRODUCT_NO, 
@@ -384,6 +382,14 @@ INSERT
 	SELECT COUNT(*) FROM TB_ORDER WHERE USER_NO = #{userNo}
 </select>
 
+<resultMap id="shoppingListMap" type="order">
+	<result property="orderNo" column="ORDER_NO" />
+	<result property="userNo" column="USER_NO" />
+	<result property="orderDate" column="ORDER_DATE"/>
+	<result property="addressNo" column="ADDRESS_NO"/>
+	<collection property="orderDetail" ofType="cart" resultMap="cartMap"/>
+</resultMap>
+
 <select id="getShoppingList" parameterType="hashmap" resultMap="shoppingListMap">
 SELECT 
         R, ORDER_NO 
@@ -397,23 +403,24 @@ SELECT
         , BRAND_NO 
         , BRAND_NAME 
         , MAIN_IMG 
-FROM (SELECT 
-            ROWNUM R
-            , ORDER_NO
-            , USER_NO 
-        FROM 
-            TB_ORDER 
-        ORDER BY ORDER_NO DESC)
- JOIN 
-        TB_ORDER_ITEM USING(ORDER_NO)
- JOIN 
-    TB_PRODUCT_OPTION USING(OPTION_NO) 
- JOIN 
-    TB_PRODUCT USING(PRODUCT_NO) 
- JOIN 
-    TB_BRAND USING(BRAND_NO) 
- WHERE R BETWEEN #{startRow} AND #{endRow} 
- AND USER_NO = #{userNo}
+	FROM (
+			SELECT 
+	            ROWNUM R
+	            , ORDER_NO
+	            , USER_NO 
+	        FROM 
+	            TB_ORDER 
+	        ORDER BY ORDER_NO DESC)
+	 JOIN 
+	     TB_ORDER_ITEM USING(ORDER_NO)
+	 JOIN 
+	     TB_PRODUCT_OPTION USING(OPTION_NO) 
+	 JOIN 
+	     TB_PRODUCT USING(PRODUCT_NO) 
+	 JOIN 
+	     TB_BRAND USING(BRAND_NO) 
+	 WHERE R BETWEEN #{startRow} AND #{endRow} 
+	 AND USER_NO = #{userNo}
 </select>
 
 <!-- 리뷰 -->
