@@ -137,7 +137,9 @@
 					</if>	
 					<if test=" status == 'progress' ">
 					<![CDATA[ 
-						TO_DATE(START_DATE, 'YY/MM/DD') < SYSDATE AND SYSDATE < TO_DATE(END_DATE, 'YY/MM/DD')
+						TO_DATE(START_DATE, 'YY/MM/DD') < SYSDATE 
+						AND 
+						SYSDATE < TO_DATE(END_DATE, 'YY/MM/DD')
 					]]>
 					</if>
 					<if test=" status == 'complete' ">
@@ -145,7 +147,6 @@
 						TO_DATE(END_DATE, 'YY/MM/DD') < SYSDATE 
 					]]>
 					</if> 
-		 
 	</select>
 	
 	<!-- 정렬결과 리스트 조회 - 진행예정/진행중/종료 -->

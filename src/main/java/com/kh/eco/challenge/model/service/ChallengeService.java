@@ -20,7 +20,6 @@ public interface ChallengeService {
 
 	// 검색결과 조회
 	int countSearchList(HashMap<String, String> map);
-	
 	ArrayList<Challenge> selectSearchList(HashMap<String, String> map, PageInfo pi);
 
 	

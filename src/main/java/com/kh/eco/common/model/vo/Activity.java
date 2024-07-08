@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @Getter @Setter @NoArgsConstructor @ToString
 
-public abstract class Activity {
+public abstract class Activity   {
 
 	private int activityNo;
 	private String status;
@@ -19,4 +19,5 @@ public abstract class Activity {
 	private Date modifyDate;
 	private int categoryNo;
 	private int type;
+	
 }

@@ -52,14 +52,13 @@
 				      
 				      	<div id="insert-form" class="modal-body" >
 
-					       	<label for="eventTitle">이벤트명 : <input id="eventTitle" class="event" name="eventTitle" type="text" required/></label>
-					        <label for="eventContent">이벤트 내용 : <input id="eventContent" class="event" name="eventContent" type="text" required/></label>
-					        <label for="eventPlace">이벤트 장소 : <input id="eventPlace" class="event" name="eventPlace" type="text" required/></label>
-					       
-					        <input class="event" id="activityNo" name="activityNo" type="hidden"/>
-					       	<input class="event" id="eventDate" name="eventDate" type="hidden" value="" />
-					       	<label for="upfile">첨부파일 : <input id="upfile" class="event" name="upfile" type="file" accept=".jpg, .jpeg, .png" required/></label>
-				       		<label for="categoryNo">카테고리 : <input id="categoryNo" class="event" name="categoryNo" type="number" required/></label>
+ 							<input type="hidden" class="event" id="activityNo" name="activityNo" value=""  />
+					       	<input type="hidden" class="event" id="eventDate" name="eventDate" value=""  />
+					       	<label for="eventTitle">이벤트명 : <input id="eventTitle" name="eventTitle" class="event"  type="text" required/></label>
+					        <label for="eventContent">이벤트내용 : <input id="eventContent" name="eventContent"  	class="event"  type="text" required/></label>
+					        <label for="eventPlace">이벤트장소 : <input id="eventPlace" name="eventPlace"   class="event"  type="text" required/></label>
+					       	<label for="upfile">첨부파일 : <input id="upfile" name="upfile" type="file"   class="event"accept=".jpg, .jpeg, .png" required/></label>
+				       		<label for="categoryNo">카테고리 : <input id="categoryNo" name="categoryNo" 	 class="event"  type="number" required/></label>
 
 					      <div class="modal-footer">
 					        <button class="btn btn-primary" id="insertEvent">등록</button>
@@ -135,7 +134,7 @@
 	#modal-body{
 	border : 1px solid teal;
 		display : flex;
-		width : 100%;
+		width : 100%;/...
 		justify-content;
 	}
 
@@ -156,7 +155,9 @@
 							<c:forEach var="e" items="${list}">
 								{ 
 									id : '${e.activityNo}',
+
 									title: '${e.eventTitle}', 
+
 									start: '${e.eventDate}',
 									 extendedProps: {
 										 place : '${e.eventPlace}',
@@ -169,6 +170,7 @@
 							</c:forEach>
 						</c:if> 
 					],	
+
 					 eventContent: function (arg) {	
 				            var event = arg.event;            
 				            var customHtml = '';
@@ -184,6 +186,7 @@
 				            }
 					   	 	return { html: customHtml }
 				        }
+
 			});// var calendar
 			calendar.render();
 			
@@ -192,7 +195,11 @@
 	        		$('#insertModal').modal('show');
 	        });
 	        calendar.on('eventClick', function(e){
+
+	
+
 				 event = e.event._def;
+
 				 $('#detail-content').children().eq(0).html(event.title);
 				 $('#detail-content').children().eq(1).html(event.extendedProps.categoryNo);
 				 $('#detail-content').children().eq(2).html(event.extendedProps.content);
@@ -200,11 +207,13 @@
 				 $('#detail-content').children().eq(4).html(event.extendedProps.participants);
 				 $('#detail-content').children().eq(5).html(event.extendedProps.imageurl);
 				 $('#detail-content').children().eq(6).html(event.publicId);
-	
-		         $('#detailModal').modal('show');	
+
+		         $('#detailModal').modal('show');  	
 	        });
 	        
-	        $('#insertEvent').on('click', function(){
+	        $('#insertEvent').on('click', () => {	
+
+
 	    		const formData = new FormData();
 	    		formData.append('eventTitle', $('#eventTitle').val());
 	    		formData.append('eventContent', $('#eventContent').val());
@@ -220,12 +229,22 @@
 	    		    contentType: false,
 	    		    enctype: 'multipart/form-data',
 	    		    data: formData,
-	    			success : function(data){	    	
-	    				alert('이벤트 등록 성공!');	
-	    				$('#insertModal').modal('hide');
+
+	    			success : data => {	    	
+	    				if(data === 'success'){
+	    					$('#insertModal').modal('hide');		
+	    					calendar.refetchEvents();
+    						alert('이벤트 등록 성공!');	
+
+    				
+    					} else{
+    						alert('이벤트 등록 실패!');
+    					}
+
 	    			},
-	    			error : function(){
-	    				console.log('작성 실패!');
+	    			error : () => {
+	    				alert('이벤트를 등록할 수 없습니다.');
+	    				$('#insertModal').modal('hide');
 	    			}
 	    		})
 	    	});
@@ -268,7 +287,7 @@
 	    			formData.append('eventContent', $('#uEventContent').val());
 	    			formData.append('eventPlace', $('#uEventPlace').val());
 	    			formData.append('upfile', $('#uUpfile')[0].files[0]);
-	    			formData.append('activityNo', Number($('#uActivityNo').val()));
+	    			formData.append('activityNo', $('#uActivityNo').val());
 	    			    
 	    			$.ajax({
 	    				url : 'update.ev',
@@ -277,8 +296,12 @@
 	    			    contentType: false,
 	    			    enctype: 'multipart/form-data',
 	    			    data: formData,
-	    				success : function(){
-	    					alert('이벤트 수정 성공!');
+	    				success : result => {
+	    					if(result === 'success'){
+	    						alert('이벤트 수정 성공!');
+	    					} else{
+	    						alert('이벤트 수정 실패!');
+	    					}
 	    					$('#detailModal').modal('hide');
 	    				},
 	    				error : function(){

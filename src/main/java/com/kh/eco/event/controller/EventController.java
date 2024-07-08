@@ -51,8 +51,7 @@ public class EventController {
     public String selectEventList(Model model) {
 
 		model.addAttribute("list", eventService.selectEventList());
-		System.out.println(eventService.selectEventList());
-		
+
         return "event/eventListView";
     }
 	  
@@ -73,32 +72,42 @@ public class EventController {
 	 */
 	
 	// 이벤트 등록
-	 @PostMapping("insert.ev") 
+	@ResponseBody
+	@SuppressWarnings("null")
+	@PostMapping("insert.ev") 
 	 public String insertEvent(	MultipartFile upfile, 
 											 Event e, 
 											 Model model, 
 											 HttpSession session) {
-		  if( !upfile.getOriginalFilename().contentEquals("")) {
+
+
+		 if( !upfile.getOriginalFilename().contentEquals("")) {	  
 			  e.setOriginName(upfile.getOriginalFilename());
 			  e.setChangeName(ChallengeController.saveFile(upfile, session));
 		  }
-		  if(eventService.insertEvent(e) > 0) {
+		 if(eventService.insertEvent(e) > 0) {
 			 session.setAttribute("alertMsg", "이벤트 등록 성공!");
-			 model.addAttribute("e", e);
-			 return "redirect:/event"; 
-		 } else { return "common/errorPage"; }
-	}
+			 model.addAttribute("e", e);	
+			 return "success"; 
+		 } else {
+			 return "fail"; 
+		 }
+	 }
+
 	  
 
 	  
 	 // 이벤트 수정
 	 @ResponseBody
 	  @PostMapping("update.ev") 
-	  public String updateEvent(Event event) {
-		  System.out.println(event);
+	  public String updateEvent(	MultipartFile upfile, 
+			  									Event e,
+			  									Model model, 
+												HttpSession session) {
 		  
-		  System.out.println(eventService.updateEvent(event));
-		  if(eventService.updateEvent(event) >0) {
+		  if(eventService.updateEvent(e) >0) {
+			  session.setAttribute("alertMsg", "이벤트 등록 성공!");
+			  model.addAttribute("e", e);
 			  return "success";
 		  } else {
 			  return "fail";

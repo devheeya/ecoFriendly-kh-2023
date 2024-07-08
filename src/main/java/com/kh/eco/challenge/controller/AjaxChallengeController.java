@@ -24,13 +24,15 @@ public class AjaxChallengeController {
 	private final ChallengeService challengeService;
 	
 	
+
 	// Model을 쓸거면 ajax를 쓰면 안돼 Java랑 JS섞어쓰지마// produce="json"안해야 success가 돌아감
 	@ResponseBody
 	@GetMapping("checkLike.ch") 
 	public String checkLikeCount(int userNo, 
 												int activityNo, 
 												Model model) {
-		HashMap<String, Integer> map = new HashMap();
+		Map<String, Integer> map = new HashMap();
+
 		map.put("userNo", userNo);
 		map.put("activityNo", activityNo);
 		

@@ -50,6 +50,7 @@ public class AchievementAjaxController {
 																 1);
 		 ArrayList<Achievement> achieveList = achievementService.selectAchievementList(activityNo, pi); 
 		 
+		 
 		 return new Gson().toJson(achieveList);
 	}
 	
@@ -66,7 +67,7 @@ public class AchievementAjaxController {
 		else { return "fail"; }
 	}
 	
-	/*
+	
 	@PutMapping("update/{achievement}/")
 	public String updateAchievement(Achievement achievement,
 													MultipartFile upfile,
@@ -89,7 +90,7 @@ public class AchievementAjaxController {
 		}
 
 	}
-	*/
+	
 	
 	@DeleteMapping("delete/{achievementNo}")
 	public String deleteAchievement(@PathVariable(name="achievementNo")int achievementNo) {
@@ -105,24 +106,18 @@ public class AchievementAjaxController {
 	
 	@GetMapping(value="mine.ac", produces="application/json; charset=UTF-8")
 	public String selectMyAchievement(int userNo, 
-														int activityNo,
-														@RequestParam(value="currentPage", defaultValue="1")int currentPage) {
-		
-		System.out.println(userNo);
-		System.out.println(activityNo);
-		
-		HashMap<String, Integer> map = new HashMap();
+														 int activityNo,
+														 @RequestParam(value="currentPage", defaultValue="1")
+														 int currentPage) {
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		map.put("userNo", userNo);
 		map.put("activityNo", activityNo);
-		
 		PageInfo pi = Pagination.getPageInfo(
 				 achievementService.countMyAchievementList(map),
 				 currentPage, 
 				 10, 
 				 1);
-		
 		ArrayList<Achievement> myAchievement =  achievementService.selectMyAchievement(map, pi);
-		
 		 return new Gson().toJson(myAchievement);
 	}
 	

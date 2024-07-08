@@ -98,6 +98,7 @@
     		<script>
     		// 1. 전역함수 선언
     			var checkLikeCount = function(){
+
 			    			var deferred = $.Deferred();
 			    			$.ajax({
 			    				url : 'checkLike.ch',
@@ -107,7 +108,10 @@
 			    				},
 			    				success : function(data){ 
 			    					deferred.resolve(data);
-			    					if(data == 'success'){ 
+
+			    				
+			    					if(data == 'success'){ // 체크한 회원이면
+
 			    						$('#like').html('💚');
 			    					} else{
 			    						$('#like').html('🤍');
@@ -132,13 +136,15 @@
     			// 만약 초기ajax success에 ajax를 쓴다면 동기로 처리되는 것이 아니라 그대로 비동기로 처리됨
     			//	$('#content-area').on('click', '#likeCount', function(){
     					
-    		// jQuery시작
     		  $(function(){		
 				$('#like').on('click',  function(){
 					checkLikeCount()
+
+
 		    		.done(function(checked){// 체크여부 확인 완료했을 때
 		    			const count = parseInt($('#count').html()); 
 					    			if(checked == 'success'){ 	
+
 						    				$.ajax({
 				    		    				url : 'deleteLike.ch',
 				    		    				type : 'POST',
@@ -147,20 +153,24 @@
 				    		    					activityNo : ${ challenge.activityNo },
 				    		    				},
 				    		    				success : function(result){ 
+
 				    		    					if(result == 'success' ){
 				    		    						$('#count').html(count - 1);
 				    		    						$('#like').html('🤍');		
 				    		    					} else {
 				    		    						console.log('좋아요 한행 삭제 실패');
 				    		    					}
+
 				    		    				},
 				    		    				error : function(){
 				    		    					console.log('decraese연결 실패');
 				    		    				}
 					    				})
+
 					    			}//if 
 					    			
 					    			else { // 처음 체크하거나 취소후 재체크하는 회원이라면
+
 						    				$.ajax({
 							    				url : 'insertLike.ch',
 							    				type : 'POST',
@@ -168,8 +178,10 @@
 							    					userNo : ${ sessionScope.loginUser.userNo },
 							    					activityNo : ${ challenge.activityNo },
 							    				},
-							    				success : function(result){ 
-							    					if(result == 'success'){ 
+
+							    				success : function(result){     				
+							    					if(result == 'success'){ 	    					
+
 							    						$('#count').html(count + 1);
 							    						$('#like').html('💚');
 							    					} 
@@ -177,6 +189,7 @@
 							    				error : function(){					
 							    					console.log('increase연결 실패'); 
 							    				}
+
 					    				})
 					    			}// else	
 					    		})// done
@@ -186,7 +199,7 @@
 					});
     		  })
     		
-    		
+
 		    </script>
 		    		
     		
@@ -224,14 +237,13 @@
     		<article id="achievement-enroll" >
     			<input id="achievementTitle" type="text" name="achievementTitle"/>
     			<textarea id="achievementContent" style="resize:none; width:100%; height:10%;"></textarea>
-    			<input id="upfile" type="file" name="upfile" />첨부파일
+    			<input id="upfile" type="file" name="upfile" />
     			<button id="insertAchievement">인증</button>
     			<button id="toggle-btn" onclick="selectMine()">내 인증글만 보기</button>
     		</article>
     	</c:if>
     		
     		<article id="achievement-list">
-
     				<div id="achievement-content">
     				</div>
 
@@ -239,19 +251,17 @@
 
 			<button id="selectMore-btn">더보기</button>
     	</section>
-
+    	
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 </div><!-- wrapper -->
 <script>
 			$('#insertAchievement').on('click', function(){
-				
 				const formData = new FormData();
-				/** fileUpload 및 저장경로 공부 */
 				formData.append('upfile', $('#upfile')[0].files[0]);
 				formData.append('activityNo', ${ challenge.activityNo });
-				formData.append('userNo', ${ sessionScope.loginUser.userNo });
+				formData.append('userId', ${ sessionScope.loginUser.userId });
 				formData.append('achievementTitle', $('#achievementTitle').val());
 				formData.append('achievementContent', $('#achievementContent').val());
-
 				$.ajax({
 					url : 'insert.ac',
 					type : 'POST',
@@ -260,7 +270,9 @@
 				    enctype: 'multipart/form-data',
 				    data: formData,
 					success : function(data){
-						if(data == 'success'){
+
+						if(data === 'success'){
+
 							currentPage = 1;
 							selectMore(currentPage);
 							$('input').val('');
@@ -281,17 +293,14 @@
 									}else if(0.75 <= progress && progress < 1){
 										alert('축하합니다 75% 이상 달성하셨습니다!');
 									}else if(1 <= progress) {
-										alert('축하합니다 100% 이상 달성하셨습니다! 마이페이지에서 뱃지를 확인하실 수 있습니다!');
-										//여기에 ajax또 쓰기 to 마이페이지
+										alert('축하합니다 100% 이상 달성하셨습니다!');
 									}else{
 										alert('잘하셨어요! 앞으로 조금만 더 힘내세요~~');
 									}
 								},
 								error : function(){
-									
 								}	
 							});
-
 						}else{
 							alert('인증 실패ㅠㅠ');
 						}
@@ -312,7 +321,6 @@
 			});
 			
 			function selectMore(currentPage){
-
 				 $.ajax({
 						url : 'achievement',
 						data : { 
@@ -320,6 +328,7 @@
 							currentPage : currentPage
 						},
 						success : function(result){
+
 							console.log("난 result : " + result);
 							if(result != ''){
 									let resultStr = '';
@@ -351,12 +360,13 @@
 							}else{
 								$('#achievement-content').html(	'인증글이 없습니다.');
 							}
+
 						},
 						error : function(){
 							console.log('인증글 보기 실패');
 						}
-				}); //ajax
-			};//selectMore
+				}); 
+			}
 </script>
 
 <script>
@@ -368,7 +378,7 @@
 				type : 'DELETE',
 				data : { achievementNo : $(this).next().html() },
 				success : function(data){
-					if(data == 'success'){
+					if(data ===  'success'){
 						currentPage = 1;
 						selectMore(currentPage);
 					}else{
@@ -379,10 +389,30 @@
 					console.log('삭제 실패');
 				}
 			});//ajax
-			
-	
+
 		});
 
+		
+		$('#achievement-content').on('click', '.update-btn', function(){
+			
+			$.ajax({
+				url : 'put/'+$(this).next().html(),
+				type : 'put',
+				data : { achievementNo : $(this).next().html() },
+				success : function(data){
+					if(data === 'success'){
+						currentPage = 1;
+						selectMore(currentPage);
+					}else{
+						alert('인증글 수정 실패! 다음에 다시 시도해주세요');
+					}
+				},
+				error : function(){
+					console.log('수정 실패');
+				}
+			});//ajax
+
+		});
 </script>
 <script>
 	let isToggled = false;
@@ -390,10 +420,8 @@
 	$('#toggle-btn').on('click', function() {
 	  isToggled = !isToggled;
 	  if (isToggled) {
-	    // 버튼이 켜진 상태일 때 수행할 작업
 	    selectMine();
 	  } else {
-	    // 버튼이 꺼진 상태일 때 수행할 작업
 	    let currentPage = 1;
 	    selectMore(currentPage);
 	  }
@@ -407,33 +435,22 @@
 				activityNo : ${ challenge.activityNo }
 			},
 			success : function(result){
-			
 				let resultStr = '';
 				for(let i in result){
 					resultStr +=
 									'<div>'
 									+'<img src="' + result[i].changeName + '"/>'
 									+'<span><b>'+ result[i].achievementTitle + '</b></span>'
-									+'<span>'+ result[i].userNo + '</span>'
 									+'<div>'+ result[i].achievementContent + '</div>'
 									+'</div>'
- 			
 					if(result[i].userNo == ${loginUser.userNo}){		
 						resultStr += '<div>'
-										+'<button class="update-btn">수정하기</button>'
-									 	+'<button class="delete-btn">삭제하기</button>'
+									 	+'<button class="delete-btn">삭제</button>'
 									 	+'<p>' + result[i].achievementNo + '</p>'
 									 	+'</div>'
 					}; 
-			
-				};//for
-			
-				/** 자기글만 보여줄 때는 html() */
-					$('#achievement-content').html(resultStr);
-	
-			},
-			error : function(){
-				
+				};
+				$('#achievement-content').html(resultStr);
 			}
 		});
 	};
@@ -448,6 +465,9 @@
     
     <!-- achievement  -->
 	<style>
+	#achievementTitle{
+		width : 100%;
+	}
 	#achievement-area{
 		/*visibility:hidden; visibility:visible*/ 
 	
@@ -462,6 +482,8 @@
         
       	grid-column-gap: 100px;
   		grid-row-gap: 50px;
+  		
+  		border : 1px solid green;
 
 	}
 	#no-item{
@@ -473,6 +495,8 @@
 	#achievement-content{
 	    align-items:center;
 	    justify-content:center; 
+	    border : 1px solid green;
+	    padding : 10px;
 
 	}
 	#achievement-content img{
@@ -482,9 +506,12 @@
 	}
 	#achievement-content div{
 		width : 100%;
+		text-align : center;
+		border : 1px solid green;
 	}
 	#achievement-content p{
 		display : none;
+		border : 1px solid green;
 	}
 	</style>
     

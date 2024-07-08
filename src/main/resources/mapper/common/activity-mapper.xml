@@ -12,8 +12,6 @@
 		<result column="UPLOAD_DATE" property="uploadDate" />
 		<result column="MODIFY_DATE" property="modifyDate" />
 		<result column="CATEGORY_NO" property="categoryNo" />
-		
-	<!-- 1. type필드를 통해 resultMap 다르게 구상하기 -->
 		<discriminator column="type" javaType="_int">
 			<case value="1" resultType="event">
 				<result column="EVENT_TITLE" property="eventTitle"/>
@@ -165,7 +163,7 @@
 		JOIN 
 						TB_USER USING (USER_NO)
 		WHERE 
-						TB_CHALLENGE.STATUS = 'Y'<!-- USER에도 STATUS가 있기 때문 -->
+						TB_CHALLENGE.STATUS = 'Y'
 	
 			<if test=" condition == 'title' ">
 						AND CHALLENGE_TITLE 

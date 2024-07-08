@@ -27,13 +27,11 @@ public class ChallengeDao {
 	
 	// 검색결과 조회
 	public int countSearchList(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
-		
 		return sqlSession.selectOne("activityMapper.countSearchList", map);
 	}
-
-	public ArrayList<Challenge> selectSearchList(SqlSessionTemplate sqlSession, HashMap<String, String> map,
-			RowBounds rowBounds) {
-		
+	public ArrayList<Challenge> selectSearchList(SqlSessionTemplate sqlSession, 
+																		HashMap<String, String> map,
+																		RowBounds rowBounds) {
 		return (ArrayList)sqlSession.selectList("activityMapper.selectSearchList", map, rowBounds);
 	}
 	

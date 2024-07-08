@@ -33,6 +33,6 @@ public class Challenge extends Activity {
 	private String endDate;
 	private int userNo;
 	
-	private List<Achievement> achieveList;
+	//private List<Achievement> achieveList;
 
 }

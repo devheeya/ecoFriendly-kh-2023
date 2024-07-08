@@ -59,40 +59,33 @@ public class ChallengeController {
 		
 		// 3. 화면 포워딩하기   WEB-INF/views/        "요기"           .jsp
 		return "challenge/challengeListView"; // vs "redirect:challenge"
-		
 	}
 	
 	// 검색결과  조회
+	
 	@GetMapping("search.condition")
-	public String selectChallengeSearch(@RequestParam(value="currentPage", defaultValue="1")int currentPage, Model model, String condition, String keyword) {
+	public String selectChallengeSearch(
+	@RequestParam(value="currentPage", defaultValue="1")int currentPage,
+																					Model model, 
+																					String condition, 
+																					String keyword) {
 		
-		// condition과 keyword 한 쌍으로 담기
-		HashMap<String, String> map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("condition", condition);
 		map.put("keyword", keyword);
 
-		System.out.println(condition);
 		PageInfo pi = Pagination.getPageInfo( 
-				challengeService.countSearchList(map),// 검색결과수 구하기
+				challengeService.countSearchList(map),
 				currentPage,
 				4,
 				5
 				);
-		
-		System.out.println("검색결과수 : " + challengeService.countSearchList(map));
-		
-		// 2. 페이징정보 불러오기 : model, modelAndView, session 셋 중 하나
 		model.addAttribute("condition", condition);
 		model.addAttribute("keyword", keyword);
 		model.addAttribute("list", challengeService.selectSearchList(map, pi));
 		model.addAttribute("pi", pi);
-		
-		System.out.println("검색결과리스트 : " + challengeService.selectSearchList(map, pi));
-		
-		// 화면 redirect? 포워딩?
-		//return "redirect:challenge"; 
-		return "challenge/challengeListView";
 
+		return "challenge/challengeListView";
 	}
 	
 
@@ -100,10 +93,12 @@ public class ChallengeController {
 	// 게시글 정렬결과 조회
 	
 	@GetMapping("search.status")
-	public String selectChallengeStatus(@RequestParam(value="currentPage", defaultValue="1")
-														 int currentPage, Model model, String status) {
 
-		HashMap<String, String> map = new HashMap(); 
+	public String selectChallengeStatus(
+	@RequestParam(value="currentPage", defaultValue="1")int currentPage, 
+																						Model model, 
+																						String status) {
+		Map<String, String> map = new HashMap(); 
 		map.put("status", status);
 
 		PageInfo pi = Pagination.getPageInfo( 
@@ -112,7 +107,7 @@ public class ChallengeController {
 				4,
 				5
 				);
-		
+
 		model.addAttribute("status", status);
 		model.addAttribute("list", challengeService.selectChallengeStatus(map, pi));	
 		model.addAttribute("pi", pi);
@@ -173,17 +168,20 @@ public class ChallengeController {
 	// 정적 Static 메서드 선언!!!!!
 	
 	public static String saveFile(MultipartFile upfile, HttpSession session) {
+
 		String originName = upfile.getOriginalFilename();
 		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()); 
 		int ranNum = (int)Math.random() * 90000 + 10000;
 		String ext = originName.substring(originName.lastIndexOf("."));
 		String changeName = currentTime + ranNum + ext; 
 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
+
 		try {
 			upfile.transferTo(new File(savePath + changeName));
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 		}
+
 		return "resources/uploadFiles/" + changeName;
 	}
 	

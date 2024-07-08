@@ -48,24 +48,15 @@ public class ChallengeServiceImpl implements ChallengeService{ // 잊지말자 i
 
 
 	// 게시글 검색결과 조회
+	
 	@Override
 	public int countSearchList(HashMap<String, String> map) {
-		
 		return challengeDao.countSearchList(sqlSession, map);
 	}
-	
-	/**
-	 * map : 조건 및 검색어를 키값으로 전달하는 매개변수
-	 * pi : 페이징처리를 위한 매개변수
-	 */
 	@Override
 	public ArrayList<Challenge> selectSearchList(HashMap<String, String> map, PageInfo pi) {
-		
 		int offset = (pi.getCurrentPage() - 1) * pi.getBoardLimit();
 		RowBounds rowBounds = new RowBounds(offset, pi.getBoardLimit());
-		
-		// 조건 및 검색어를 mapper에서 적용해야하기에,
-		// rowBounds는 페이징처리를 위해 인자로 넘김
 		return challengeDao.selectSearchList(sqlSession, map, rowBounds);
 	}
 
