@@ -98,33 +98,25 @@ public class ChallengeController {
 
 
 	// 게시글 정렬결과 조회
+	
 	@GetMapping("search.status")
-	public String selectChallengeStatus(@RequestParam(value="currentPage", defaultValue="1")int currentPage, Model model, String status) {
-		
-		
-		  // 0. Map에 status 키와 밸류 담기
+	public String selectChallengeStatus(@RequestParam(value="currentPage", defaultValue="1")
+														 int currentPage, Model model, String status) {
+
 		HashMap<String, String> map = new HashMap(); 
 		map.put("status", status);
-		 
-		
-		
-		// 1. pi가져오기
+
 		PageInfo pi = Pagination.getPageInfo( 
-				challengeService.countChallengeStatus(map),// 검색결과수 구하기
+				challengeService.countChallengeStatus(map),
 				currentPage,
 				4,
 				5
 				);
 		
-	
-		// 2. 페이징정보 불러오기 : model, modelAndView, session 셋 중 하나
 		model.addAttribute("status", status);
-		model.addAttribute("list", challengeService.selectChallengeStatus(map, pi));	// status가지고 DB갔다오기
+		model.addAttribute("list", challengeService.selectChallengeStatus(map, pi));	
 		model.addAttribute("pi", pi);
-		
-		//System.out.println("정렬조회결과개수 : " + challengeService.countChallengeStatus(map));
-		
-		
+
 		return "challenge/challengeListView";
 	}
 
@@ -179,37 +171,20 @@ public class ChallengeController {
 	// 파일원본명, 서버업로드할 경로+바뀐이름 2개를 challenge에 담는 메서드
 	// ex. 'bonobono.jsp' => 2023111610383.jsp
 	// 정적 Static 메서드 선언!!!!!
+	
 	public static String saveFile(MultipartFile upfile, HttpSession session) {
-		
-		// 원본파일명 뽑기(필드명과 같게)
 		String originName = upfile.getOriginalFilename();
-		
-		// 현재시각 문자열 특정형식으로 담기
-		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()); // 왜 sql이 아니지?
-		
-		// 랜덤값 얻기 (*범위 + 초기값)
+		String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()); 
 		int ranNum = (int)Math.random() * 90000 + 10000;
-		
-		// 확장자 뽑기
 		String ext = originName.substring(originName.lastIndexOf("."));
-		
-		// 새파일명 정의(필드명과 같게)
-		String changeName = currentTime + ranNum + ext; // String끼리 더하면 그냥 이어붙인 결과
-		
-		// 업로드한 파일을 저장할 경로 설정
+		String changeName = currentTime + ranNum + ext; 
 		String savePath = session.getServletContext().getRealPath("/resources/uploadFiles/");
-		
-		// 업로드한 파일을 새 파일객체로 이동시킴 == 파일전송
 		try {
 			upfile.transferTo(new File(savePath + changeName));
 		} catch (IllegalStateException | IOException e) {
-			
 			e.printStackTrace();
 		}
-		
-		// 파일전송완료시 그 파일이 있는 경로를 반환해줘야함
 		return "resources/uploadFiles/" + changeName;
-		
 	}
 	
 	// 게시글 상세조회

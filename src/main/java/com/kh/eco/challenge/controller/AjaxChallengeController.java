@@ -24,27 +24,21 @@ public class AjaxChallengeController {
 	private final ChallengeService challengeService;
 	
 	
-	// Model을 쓸거면 ajax를 쓰면 안돼 Java랑 JS섞어쓰지마
-	@GetMapping(value="checkLike.ch") // produce="json"안해야 success가 돌아감
-	public String checkLikeCount(int userNo, int activityNo, Model model) {
-		System.out.println(userNo + "   " + activityNo);
-		
+	// Model을 쓸거면 ajax를 쓰면 안돼 Java랑 JS섞어쓰지마// produce="json"안해야 success가 돌아감
+	@ResponseBody
+	@GetMapping("checkLike.ch") 
+	public String checkLikeCount(int userNo, 
+												int activityNo, 
+												Model model) {
 		HashMap<String, Integer> map = new HashMap();
 		map.put("userNo", userNo);
 		map.put("activityNo", activityNo);
 		
-		System.out.println("좋아요여부 : " + challengeService.checkLikeCount(map));
-		if(challengeService.checkLikeCount(map) > 0) { // 좋아요 이미 체크한 회원
-
-			//model.addAttribute("likedUser", challengeService.selectLikedUser(map)); => 가는 페이지가 detailView가 아닌가봐..
-			//model.addAttribute("likeCount", challengeService.selectLikeCount(challengeNo));
+		if(challengeService.checkLikeCount(map) > 0) { 
 			return "success";
-		} 
-		else {
-			//System.out.println("좋아요 여부 : " + challengeService.checkLikeCount(map) );
+		} else {
 			return "fail";
 		}
-		
 	}
 	
 	

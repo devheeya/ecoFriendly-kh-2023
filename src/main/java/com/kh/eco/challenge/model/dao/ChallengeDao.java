@@ -41,14 +41,12 @@ public class ChallengeDao {
 	// 정렬 조회
 
 	public int countChallengeStatus(SqlSessionTemplate sqlSession, HashMap<String, String> map) {
-		
 		return sqlSession.selectOne("activityMapper.countChallengeStatus", map);
 	}
 	
-	public ArrayList<Challenge> selectChallengeStatus(SqlSessionTemplate sqlSession, HashMap<String, String> map, RowBounds rowBounds){
-		
+	public ArrayList<Challenge> selectChallengeStatus(SqlSessionTemplate sqlSession, 
+																			  HashMap<String, String> map, RowBounds rowBounds){
 		return (ArrayList)sqlSession.selectList("activityMapper.selectChallengeStatus", map, rowBounds);
-		
 	}
 	
 

@@ -255,7 +255,7 @@
 						USER_ID,
 						CATEGORY_NAME
 		FROM
-						TB_CHALLENGE
+						TB_CHALLENGE C
 		JOIN
 						TB_ACTIVITY USING(ACTIVITY_NO)
 		JOIN
@@ -263,7 +263,7 @@
 		JOIN
 						TB_CATEGORY USING (CATEGORY_NO)
 		WHERE 
-						TB_CHALLENGE.STATUS = 'Y'
+						 C.STATUS = 'Y'
 		AND
 					<if test=" status == 'coming' ">
 					<![CDATA[ 
@@ -272,7 +272,9 @@
 					</if>	
 					<if test=" status == 'progress' ">
 					<![CDATA[ 
-					TO_DATE(START_DATE, 'YY/MM/DD') < SYSDATE AND SYSDATE < TO_DATE(END_DATE, 'YY/MM/DD')
+					TO_DATE(START_DATE, 'YY/MM/DD') < SYSDATE 
+					AND 
+					SYSDATE < TO_DATE(END_DATE, 'YY/MM/DD')
 					]]>
 					</if>
 					<if test=" status == 'complete' ">
@@ -283,7 +285,7 @@
 	</select>
 	
 	
-	<!-- 조회수 증가 -->
+	<!-- 조회수 증가 -->--
 	<update id="increaseViewCount" parameterType="_int">
 		UPDATE 
 						TB_CHALLENGE

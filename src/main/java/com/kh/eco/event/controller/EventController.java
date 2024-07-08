@@ -88,27 +88,16 @@ public class EventController {
 											 Event e, 
 											 Model model, 
 											 HttpSession session) {
-
-
-		  // 이벤트 등록
 		  if( !upfile.getOriginalFilename().contentEquals("")) {
-			  
 			  e.setOriginName(upfile.getOriginalFilename());
 			  e.setChangeName(ChallengeController.saveFile(upfile, session));
-		
 		  }
-		  
-				 if(eventService.insertEvent(e) > 0) {
-					 session.setAttribute("alertMsg", "이벤트 등록 성공!");
-					 model.addAttribute("e", e);
-					 System.out.println("OriginName : " + e.getOriginName());
-					 System.out.println("changeName : " + e.getChangeName());
-					 return "redirect:/event"; 
-					 //return "event/eventListView";// 이렇게 포워딩하면 기존정보가 그대로??
-				 } else {
-					 return "common/errorPage"; 
-				 }
-		  }
+		  if(eventService.insertEvent(e) > 0) {
+			 session.setAttribute("alertMsg", "이벤트 등록 성공!");
+			 model.addAttribute("e", e);
+			 return "redirect:/event"; 
+		 } else { return "common/errorPage"; }
+	}
 	  
 
 	  
