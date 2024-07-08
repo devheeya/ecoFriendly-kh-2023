@@ -87,7 +87,9 @@
 	            		<option value="progress">진행중</option>
 	            		<option value="complete">종료</option>
 	            	</select>
-	            	<button id="search-status-btn" type="submit"><i class="fas fa-search fa-lg"></i></button>
+	            	<button id="search-status-btn" type="submit">
+	            	<i class="fas fa-search fa-lg"></i>
+	            	</button>
 	            </form>
             </article>
         

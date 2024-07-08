@@ -55,16 +55,6 @@ public class EventController {
 		
         return "event/eventListView";
     }
-	
-	// 이벤트 등록폼
-	/*
-	 * @RequestMapping("enrollForm.ev") public String eventEnrollForm(String
-	 * eventDate, Model model) {
-	 * 
-	 * //System.out.println("이벤트등록날짜 : " + eventDate);
-	 * //model.addAttribute("eventDate", eventDate); //return "redirect:/"; //return
-	 * "event/eventListView"; //return "redirect:/event"; return "redirect:/"; }
-	 */
 	  
 
 	/*
