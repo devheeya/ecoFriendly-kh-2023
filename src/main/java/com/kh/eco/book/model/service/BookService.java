@@ -3,13 +3,12 @@ package com.kh.eco.book.model.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.kh.eco.book.model.vo.Book;
 import com.kh.eco.book.model.vo.BookReply;
 import com.kh.eco.book.model.vo.BookReport;
 import com.kh.eco.book.model.vo.BookReportReply;
-import com.kh.eco.book.model.vo.ReportBlack;
-import com.kh.eco.book.model.vo.ReportReplyBlack;
 import com.kh.eco.common.model.vo.PageInfo;
 
 public interface BookService {
@@ -18,26 +17,18 @@ public interface BookService {
 	// 도서정보리스트 조회수 조회
 	public ArrayList<Book> countList();
 	
-	// 도서정보 조회수 추가
-	public int insertBook(Book book);
-	
-	// 도서정보 조회수 증가
-	public int increaseBook(String ISBN);
+	public int bookDetail(Book book, int count);
 	
 	// 도서정보 조회수 조회
 	public int countBook(String ISBN);
 	
-	// 도서 북마크 추가
-	public int insertBookMark(HashMap map);
+	public Map<String, Object> bookMarkMenu(Map<String, Object> map, String className);
 	
-	// 도서 북마크 제거
-	public int removeBookMark(HashMap map);
-	
-	// 도서 북마크 추가
-	public int ajaxSelectBookMark(HashMap map);
+	// 도서 북마크 조회
+	public int selectBookMark(Map map);
 	
 	// 도서 한줄평 등록
-	public int ajaxInsertBookReply(HashMap map);
+	public int insertBookReply(Map map);
 	
 	// 도서 한줄평 개수 조회
 	public int ajaxSelectBookReplyCount(String ISBN13);
@@ -56,10 +47,10 @@ public interface BookService {
 	public List<BookReport> selectReportList(PageInfo pi);
 	
 	// 독후감 게시판 검색 개수 조회
-	public int searchReportCount(HashMap map);
+	public int searchReportCount(Map map);
 	
 	// 독후감 게시판 검색 조회
-	public List<BookReport> searchReportList(HashMap map, PageInfo pi);
+	public List<BookReport> searchReportList(Map map, PageInfo pi);
 	
 	// 독후감 게시판 작성
 	public int reportEnrollForm(BookReport bookReport);
@@ -127,13 +118,13 @@ public interface BookService {
 	public int adminReportBlackCount();
 	
 	// 관리자페이지 신고게시글 목록 조회
-	public List<ReportBlack> adminReportBlack(PageInfo pi);
+	public List<BookReport> adminReportBlack(PageInfo pi);
 	
 	// 관리자페이지 신고댓글 개수 조회
 	public int adminReportReplyBlackCount();
 	
 	// 관리자페이지 신고댓글 목록 조회
-	public List<ReportReplyBlack> adminReportReplyBlack(PageInfo pi);
+	public List<BookReportReply> adminReportReplyBlack(PageInfo pi);
 	
 	// 관리자페이지 신고게시글 삭제
 	public int deleteReportBlack(int[] arr);

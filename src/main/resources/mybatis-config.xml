@@ -29,8 +29,6 @@
 		<typeAlias type="com.kh.eco.book.model.vo.BookReport" alias="bookReport" />
 		<typeAlias type="com.kh.eco.book.model.vo.BookReportReply" alias="bookReportReply" />
 
-		<typeAlias type="com.kh.eco.book.model.vo.ReportBlack" alias="adminReportBlack" />
-		<typeAlias type="com.kh.eco.book.model.vo.ReportReplyBlack" alias="adminReportReplyBlack" />
 		<typeAlias type="com.kh.eco.product.model.vo.ApproveRequest" alias="approveRequest" />
 
 		<typeAlias type="com.kh.eco.common.model.vo.Activity" alias="activity" />

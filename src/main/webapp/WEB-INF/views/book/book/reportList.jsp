@@ -81,19 +81,10 @@
           		<c:otherwise>
 		          	<c:forEach items="${ list }" var="r" varStatus="i">
 		          		<c:choose>
-		          			<c:when test="${ r.bookReportNotice ne 0 }">
-		          				<tr style="color:red;">
-						          <td class="rno"><c:out value="${ r.bookReportNo }" /></td>
-						          <td>공지</td>
-						          <td><c:out value="${ r.bookReportTitle }" /></td>
-						          <td><c:out value="${ r.userId }" /></td>
-						          <td><c:out value="${ r.bookReportDate }" /></td>
-						          <td><c:out value="${ r.bookReportCount }" /></td>
-						        </tr>
-		          			</c:when>
 		          			<c:when test="${ r.bookReportSecret eq 1 }">
 		        				<c:choose>
-		        					<c:when test="${ r.userId eq loginUser.userId or loginUser.userStatus eq 'A' }">
+		        					<c:when test="${ r.userId eq loginUser.userId or 
+		        									 loginUser.userStatus eq 'A' }">
 		        						<tr>
 								          <td class="rno"><c:out value="${ r.bookReportNo }" /></td>
 								          <td>
@@ -150,13 +141,29 @@
 		</c:if>
         
        	<ul class="pagination justify-content-center">
-        	<li class="page-item li-previous"><a class="page-link page-previous" href="bookreport?cPage=${ pi.currentPage - 1 }">Previous</a></li>
-           <c:forEach begin="${ pi.startPage }" end="${ pi.endPage }" var="p">
-           		<li class="page-item"><a id="${p}" class="page-link page-now" href="bookreport?cPage=${p}">${p}</a></li>
-           </c:forEach>
-	       	<li class="page-item li-next"><a class="page-link page-next" href="bookreport?cPage=${ pi.currentPage + 1 }">Next</a></li>
-    	</ul>
+	        	<c:choose>
+		       		<c:when test="${ pi.currentPage eq 1 }">
+		             	<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+		       		</c:when>
+		       		<c:otherwise>
+		       		 	<li class="page-item"><a class="page-link page-previous" href="bookReport?cPage=${ pi.currentPage - 1 }">Previous</a></li>
+		       		</c:otherwise>
+		       	</c:choose>
+		           <c:forEach begin="${ pi.startPage }" end="${ pi.endPage }" var="p">
+		           		<li class="page-item"><a id="${p}" class="page-link page-now" href="bookReport?cPage=${p}">${p}</a></li>
+		           </c:forEach>
+	           	<c:choose>
+		       		<c:when test="${ pi.currentPage eq pi.maxPage }">
+		       			<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+		       		</c:when>
+		       		<c:otherwise>
+		       		 	<li class="page-item"><a class="page-link page-next" href="bookReport?cPage=${ pi.currentPage + 1 }">Next</a></li>
+		       		</c:otherwise>
+	       		</c:choose>
+       		</ul>
+       		
       	<script>
+       		/*
       		$(function(){
       			if(${ pi.currentPage } == 1){
       				$('.page-previous').attr("href", "#");
@@ -166,10 +173,10 @@
       				$('.page-next').attr("href", "#");
       				$('.li-next').addClass('disabled');
       			}
-      			if(${pi.currentPage} > ${ pi.maxPage }){
+      			if(${pi.currentPage} == ${ pi.maxPage }){
       				$('.li-previous').after('<li class="page-item"><a class="page-link disabled" href="#">1</a></li>');
       			}
-      		})
+      		})*/
       	</script>
        	<c:if test="${ not empty reportsearch }">
        		<script>

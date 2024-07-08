@@ -77,7 +77,7 @@
 		
 	        <div id="book-container">
 	            <c:forEach items="${ bookList }" var="b">
-	            	<form id="book" method="post" action="">
+	            	<form id="book" method="POST" action="">
 	            		<div>
 		            		<img src="${ b.bookImg }">
 		            		<p class="book-title">${ b.bookTitle }</p>
@@ -104,14 +104,14 @@
 		           <c:forEach begin="${ pi.startPage }" end="${ pi.endPage }" var="p">
 		           		<li class="page-item"><a id="${p}" class="page-link page-now" href="book?cPage=${p}">${p}</a></li>
 		           </c:forEach>
-		           <c:choose>
+	           	<c:choose>
 		       		<c:when test="${ pi.currentPage eq pi.maxPage }">
 		       			<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
 		       		</c:when>
 		       		<c:otherwise>
 		       		 	<li class="page-item"><a class="page-link page-next" href="book?cPage=${ pi.currentPage + 1 }">Next</a></li>
 		       		</c:otherwise>
-		       	</c:choose>
+	       		</c:choose>
        		</ul>
         	<c:if test="${ not empty selectBook }">
         		<script>

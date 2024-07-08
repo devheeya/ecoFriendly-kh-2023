@@ -42,10 +42,10 @@
         }
         
         .bookmark{
-        	content: url(/eco/resources/images/book/book-empty.png);
+        	content: url(resources/images/book/book-empty.png);
         }
         img[class$=abled]{
-        	content: url(/eco/resources/images/book/book-full.png);
+        	content: url(resources/images/book/book-full.png);
         }
     </style>
     
@@ -54,10 +54,9 @@
     			var loginNo = ${ sessionScope.loginUser.userNo };
     			
     			$(function(){
-	        		// 북마크 조회 ajax
 	        		$.ajax({
-	        			url : 'selectBookMark.bk',
-	        			type : 'post',
+	        			url : 'bookMark.bk',
+	        			type : 'get',
 	        			data : {
 	        				ISBN13 : '${ b.ISBN13 }',
 	        				userNo : loginNo
@@ -84,6 +83,7 @@
 	        				$('.bookmark').attr('class', result);
 	        			},
 	        			error : () => {
+	        				console.log($('.bookmark').attr('class'));
 	        				alert("북마크 조작 실패");
 	        			}
 	        		});
@@ -92,7 +92,7 @@
 	    		function insertReply(){ // 한줄평 등록 ajax
 	        		if($('#bookReplyContent').val().trim() != ''){
 	    	    		$.ajax({
-	    	    			url : 'insertBookReply.bk',
+	    	    			url : 'bookReply.bk',
 	    	    			type : 'post',
 	    	    			data : {
 	    	    				ISBN13 : '${ b.ISBN13 }',
@@ -118,8 +118,8 @@
 	    		
 	    		function deleteReply(){ // 한줄평 삭제 ajax
 	        		$.ajax({
-	        			url : 'deleteBookReply.bk',
-	        			type : 'post',
+	        			url : 'bookReply.bk',
+	        			type : 'DELETE',
 	        			data : {
 	        				ecoNo : $('#bookReply-area').find('input[name=ecoNo]').val(),
 	        				ISBN13 : '${ b.ISBN13 }',
@@ -152,8 +152,8 @@
     	function selectBookReply(nowPage){
     		// 한줄평 조회 ajax
     		$.ajax({
-    			url : 'selectBookReply.bk',
-    			type : 'post',
+    			url : 'bookReply.bk',
+    			type : 'get',
     			data : {
     				ISBN13 : '${ b.ISBN13 }',
 					cPage : nowPage    				
